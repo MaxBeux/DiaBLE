@@ -35,6 +35,9 @@ struct Monitor: View {
                                 .onReceive(minuteTimer) { _ in
                                     minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                 }
+                                .onReceive(app.$lastReadingDate) { _ in
+                                    minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
+                                }
                         } else {
                             Text("---")
                         }

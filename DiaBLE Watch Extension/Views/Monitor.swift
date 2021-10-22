@@ -15,7 +15,7 @@ struct Monitor: View {
     @State private var editingCalibration = false
 
     @State private var readingCountdown: Int = 0
-    @State private var elapsedMinutes: Int = 0
+    @State private var minutesSinceLastReading: Int = 0
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
@@ -31,9 +31,9 @@ struct Monitor: View {
                     VStack(spacing: 0) {
                         if app.lastReadingDate != Date.distantPast {
                             Text(app.lastReadingDate.shortTime)
-                            Text("\(elapsedMinutes) min ago").font(.system(size: 10)).lineLimit(1)
+                            Text("\(minutesSinceLastReading) min ago").font(.system(size: 10)).lineLimit(1)
                                 .onReceive(minuteTimer) { _ in
-                                    elapsedMinutes = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
+                                    minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                 }
                         } else {
                             Text("---")
@@ -179,6 +179,13 @@ struct Monitor: View {
         .edgesIgnoringSafeArea([.top, .bottom])
         .buttonStyle(.plain)
         .multilineTextAlignment(.center)
+        .onAppear {
+            if app.sensor != nil {
+                minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
+            } else if app.lastReadingDate != Date.distantPast {
+                minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
+            }
+        }
     }
 }
 

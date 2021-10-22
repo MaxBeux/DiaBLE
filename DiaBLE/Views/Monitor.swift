@@ -15,7 +15,7 @@ struct Monitor: View {
     @State private var showingNFCAlert = false
 
     @State private var readingCountdown: Int = 0
-    @State private var elapsedMinutes: Int = 0
+    @State private var minutesSinceLastReading: Int = 0
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
@@ -38,9 +38,9 @@ struct Monitor: View {
                             VStack {
                                 if app.lastReadingDate != Date.distantPast {
                                     Text(app.lastReadingDate.shortTime)
-                                    Text("\(elapsedMinutes) min ago").font(.footnote)
+                                    Text("\(minutesSinceLastReading) min ago").font(.footnote)
                                         .onReceive(minuteTimer) { _ in
-                                            elapsedMinutes = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
+                                            minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
                                         }
                                 } else {
                                     Text("---")
@@ -192,6 +192,13 @@ struct Monitor: View {
                 .multilineTextAlignment(.center)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("DiaBLE  \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)  -  Monitor")
+                .onAppear {
+                    if app.sensor != nil {
+                        minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
+                    } else if app.lastReadingDate != Date.distantPast {
+                        minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
+                    }
+                }
                 .toolbar {
 
                     ToolbarItem(placement: .navigationBarLeading) {

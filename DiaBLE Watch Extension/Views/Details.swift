@@ -8,9 +8,11 @@ struct Details: View {
     @EnvironmentObject var settings: Settings
 
     @State private var readingCountdown: Int = 0
+    @State private var minutesSinceLastReading: Int = 0
     @State private var showingCalibrationInfoForm = false
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack {
@@ -169,12 +171,15 @@ struct Details: View {
                             HStack {
                                 Text("Age")
                                 Spacer()
-                                Text(app.sensor.age.formattedInterval).foregroundColor(.yellow)
+                                Text((app.sensor.age + minutesSinceLastReading).formattedInterval).foregroundColor(.yellow)
+                                    .onReceive(minuteTimer) { _ in
+                                        minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
+                                    }
                             }
                             HStack {
                                 Text("Started on")
                                 Spacer()
-                                Text("\((app.lastReadingDate - Double(app.sensor.age) * 60).shortDateTime)").foregroundColor(.yellow)
+                                Text("\((app.sensor.lastReadingDate - Double(app.sensor.age) * 60).shortDateTime)").foregroundColor(.yellow)
                             }
                         }
                         if !app.sensor.uid.isEmpty {
@@ -336,6 +341,13 @@ struct Details: View {
         .navigationTitle("Details")
         .foregroundColor(Color(.lightGray))
         .buttonStyle(.plain)
+        .onAppear {
+            if app.sensor != nil {
+                minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
+            } else if app.lastReadingDate != Date.distantPast {
+                minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
+            }
+        }
     }
 }
 

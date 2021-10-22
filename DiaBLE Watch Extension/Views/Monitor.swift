@@ -15,9 +15,10 @@ struct Monitor: View {
     @State private var editingCalibration = false
 
     @State private var readingCountdown: Int = 0
+    @State private var elapsedMinutes: Int = 0
 
-    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
 
@@ -30,8 +31,9 @@ struct Monitor: View {
                     VStack(spacing: 0) {
                         if app.lastReadingDate != Date.distantPast {
                             Text(app.lastReadingDate.shortTime)
-                            Text("\(Int(Date().timeIntervalSince(app.lastReadingDate)/60)) min ago").font(.system(size: 10)).lineLimit(1)
+                            Text("\(elapsedMinutes) min ago").font(.system(size: 10)).lineLimit(1)
                                 .onReceive(minuteTimer) { _ in
+                                    elapsedMinutes = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                 }
                         } else {
                             Text("---")
@@ -43,7 +45,7 @@ struct Monitor: View {
                         .foregroundColor(.black)
                         .padding(.vertical, 0).padding(.horizontal, 4)
                         .background(app.currentGlucose > 0 && (app.currentGlucose > Int(settings.alarmHigh) || app.currentGlucose < Int(settings.alarmLow)) ?
-                                        Color.red : Color.blue)
+                                    Color.red : Color.blue)
                         .cornerRadius(6)
 
                     // TODO
@@ -75,7 +77,7 @@ struct Monitor: View {
 
                     if !app.deviceState.isEmpty && app.deviceState != "Disconnected" {
                         Text(readingCountdown > 0 || app.deviceState == "Reconnecting..." ?
-                                "\(readingCountdown) s" : "")
+                             "\(readingCountdown) s" : "")
                             .fixedSize()
                             .font(Font.footnote.monospacedDigit()).foregroundColor(.orange)
                             .onReceive(timer) { _ in
@@ -113,11 +115,11 @@ struct Monitor: View {
                         VStack(spacing: 0) {
                             if app.device.battery > -1 {
                                 Text("Battery: ").foregroundColor(Color(.lightGray)) +
-                                    Text("\(app.device.battery)%").foregroundColor(app.device.battery > 10 ? .green : .red)
+                                Text("\(app.device.battery)%").foregroundColor(app.device.battery > 10 ? .green : .red)
                             }
                             if app.device.rssi != 0 {
                                 Text("RSSI: ").foregroundColor(Color(.lightGray)) +
-                                    Text("\(app.device.rssi) dB")
+                                Text("\(app.device.rssi) dB")
                             }
                         }
                     }

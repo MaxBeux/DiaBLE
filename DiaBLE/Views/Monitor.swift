@@ -15,9 +15,10 @@ struct Monitor: View {
     @State private var showingNFCAlert = false
 
     @State private var readingCountdown: Int = 0
+    @State private var elapsedMinutes: Int = 0
 
-    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationView {
@@ -37,8 +38,9 @@ struct Monitor: View {
                             VStack {
                                 if app.lastReadingDate != Date.distantPast {
                                     Text(app.lastReadingDate.shortTime)
-                                    Text("\(Int(Date().timeIntervalSince(app.lastReadingDate)/60)) min ago").font(.footnote)
+                                    Text("\(elapsedMinutes) min ago").font(.footnote)
                                         .onReceive(minuteTimer) { _ in
+                                            elapsedMinutes = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                         }
                                 } else {
                                     Text("---")

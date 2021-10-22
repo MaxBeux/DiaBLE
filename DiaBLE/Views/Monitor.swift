@@ -40,7 +40,7 @@ struct Monitor: View {
                                     Text(app.lastReadingDate.shortTime)
                                     Text("\(minutesSinceLastReading) min ago").font(.footnote)
                                         .onReceive(minuteTimer) { _ in
-                                            minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
+                                            minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                         }
                                 } else {
                                     Text("---")
@@ -193,9 +193,7 @@ struct Monitor: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("DiaBLE  \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)  -  Monitor")
                 .onAppear {
-                    if app.sensor != nil {
-                        minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
-                    } else if app.lastReadingDate != Date.distantPast {
+                   if app.lastReadingDate != Date.distantPast {
                         minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                     }
                 }

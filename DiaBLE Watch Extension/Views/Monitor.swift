@@ -180,9 +180,7 @@ struct Monitor: View {
         .buttonStyle(.plain)
         .multilineTextAlignment(.center)
         .onAppear {
-            if app.sensor != nil {
-                minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
-            } else if app.lastReadingDate != Date.distantPast {
+            if app.lastReadingDate != Date.distantPast {
                 minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
             }
         }

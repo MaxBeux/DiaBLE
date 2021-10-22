@@ -42,13 +42,14 @@ struct Monitor: View {
                                         .onReceive(minuteTimer) { _ in
                                             minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                         }
-                                        .onReceive(app.$lastReadingDate) { _ in
-                                            minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
-                                        }
                                 } else {
                                     Text("---")
                                 }
-                            }.frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 12).foregroundColor(Color(.lightGray))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 12).foregroundColor(Color(.lightGray))
+                            .onChange(of: app.lastReadingDate) { readingDate in
+                                minutesSinceLastReading = Int(Date().timeIntervalSince(readingDate)/60)
+                            }
 
                             Text(app.currentGlucose > 0 ? "\(app.currentGlucose.units) " : "--- ")
                                 .font(.system(size: 42, weight: .black)).monospacedDigit()
@@ -196,7 +197,7 @@ struct Monitor: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("DiaBLE  \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)  -  Monitor")
                 .onAppear {
-                   if app.lastReadingDate != Date.distantPast {
+                    if app.lastReadingDate != Date.distantPast {
                         minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                     }
                 }

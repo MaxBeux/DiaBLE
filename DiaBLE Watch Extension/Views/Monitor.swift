@@ -35,13 +35,14 @@ struct Monitor: View {
                                 .onReceive(minuteTimer) { _ in
                                     minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                 }
-                                .onReceive(app.$lastReadingDate) { _ in
-                                    minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
-                                }
                         } else {
                             Text("---")
                         }
-                    }.font(.footnote).frame(maxWidth: .infinity, alignment: .trailing ).foregroundColor(Color(.lightGray))
+                    }
+                    .font(.footnote).frame(maxWidth: .infinity, alignment: .trailing ).foregroundColor(Color(.lightGray))
+                    .onChange(of: app.lastReadingDate) { readingDate in
+                        minutesSinceLastReading = Int(Date().timeIntervalSince(readingDate)/60)
+                    }
 
                     Text(app.currentGlucose > 0 ? "\(app.currentGlucose.units)" : "---")
                         .font(.system(size: 26, weight: .black)).monospacedDigit()

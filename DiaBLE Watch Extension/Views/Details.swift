@@ -39,6 +39,13 @@ struct Details: View {
                                     Text(app.device.peripheral!.name!).foregroundColor(.yellow)
                                 }
                             }
+                            if app.device.peripheral != nil {
+                                HStack {
+                                    Text("State")
+                                    Spacer()
+                                    Text(app.device.peripheral!.state.description.capitalized).foregroundColor(.yellow)
+                                }
+                            }
                             if settings.debugLevel > 0 && app.device.peripheral != nil {
                                 HStack {
                                     Text("Identifier")

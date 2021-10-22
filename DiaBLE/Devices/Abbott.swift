@@ -161,7 +161,8 @@ class Abbott: Transmitter {
 
             if data.count == 20 {
                 buffer = Data()
-                sensor!.lastReadingDate = main.app.lastReadingDate
+                main.app.lastReadingDate = main.app.lastConnectionDate
+                sensor!.lastReadingDate = main.app.lastConnectionDate
             }
 
             buffer.append(data)

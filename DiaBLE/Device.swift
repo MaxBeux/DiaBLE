@@ -51,6 +51,7 @@ class Device: ObservableObject, Logging {
 
     /// Updated when notified by the Bluetooth manager
     @Published var state: CBPeripheralState = .disconnected
+    @Published var lastConnectionDate: Date = Date.distantPast
 
     var readCharacteristic: CBCharacteristic?
     var writeCharacteristic: CBCharacteristic?

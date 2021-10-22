@@ -54,6 +54,7 @@ class AppState: ObservableObject {
     @Published var trendDeltaMinutes: Int = 0
 
     @Published var deviceState: String = ""
+    @Published var lastConnectionDate: Date = Date.distantPast
     @Published var status: String = "Welcome to DiaBLE!"
 
     @Published var calibration: Calibration = Calibration() {

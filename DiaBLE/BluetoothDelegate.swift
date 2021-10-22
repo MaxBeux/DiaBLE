@@ -174,20 +174,20 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         app.device.peripheral?.delegate = self
         log("Bluetooth: connecting to \(name!)...")
         centralManager.connect(app.device.peripheral!, options: nil)
-        app.deviceState = "Connecting..."
-        if app.device.state == .connecting { app.deviceState = "Connecting" }
+        app.device.state = app.device.peripheral!.state
+        app.deviceState = app.device.state.description.capitalized + "..."
     }
 
 
     public func centralManager(_ manager: CBCentralManager, didConnect peripheral: CBPeripheral) {
         let name = peripheral.name ?? "an unnamed peripheral"
         var msg = "Bluetooth: \(name) has connected"
-        if app.device.state == .disconnected {
-            app.device.state = peripheral.state
-            app.deviceState = "Connected"
-            msg += ("; discovering services")
-            peripheral.discoverServices(nil)
-        }
+        app.device.state = peripheral.state
+        app.deviceState = app.device.state.description.capitalized
+        app.device.lastConnectionDate = Date()
+        app.lastConnectionDate = app.device.lastConnectionDate
+        msg += ("; discovering services")
+        peripheral.discoverServices(nil)
         log(msg)
     }
 
@@ -397,7 +397,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     public func centralManager(_ manager: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         let name = peripheral.name ?? "an unnamed peripheral"
         app.device?.state = peripheral.state
-        app.deviceState = "Disconnected"
+        app.deviceState = app.device.state.description.capitalized
         if error != nil {
             log("Bluetooth: \(name) has disconnected.")
             let errorCode = CBError.Code(rawValue: (error! as NSError).code)! // 6 = timed out when out of range
@@ -530,9 +530,8 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
 
             if app.device == nil { return }     // the connection timed out in the meantime
 
-            if app.transmitter != nil {
-                app.lastReadingDate = Date()
-            }
+            app.device.lastConnectionDate = Date()
+            app.lastConnectionDate = app.device.lastConnectionDate
 
             app.device.read(data, for: characteristic.uuid.uuidString)
 

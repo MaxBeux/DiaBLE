@@ -122,7 +122,10 @@ class Bubble: Transmitter {
                 }
 
             } else if response == .dataPacket || response == .decryptedDataPacket {
-                if buffer.count == 0 { sensor!.lastReadingDate = main.app.lastReadingDate }
+                if buffer.count == 0 {
+                    main.app.lastReadingDate = main.app.lastConnectionDate
+                    sensor!.lastReadingDate = main.app.lastConnectionDate
+                }
                 buffer.append(data.suffix(from: 4))
                 log("\(name): partial buffer size: \(buffer.count)")
                 if buffer.count >= 344 {

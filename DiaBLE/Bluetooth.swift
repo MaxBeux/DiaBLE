@@ -79,8 +79,20 @@ struct BLE {
         let code: Int
         let name: String
     }
-
     static let companies = try! JSONDecoder().decode(Array<BLE.Company>.self, from: Data(contentsOf: Bundle.main.url(forResource: "company_ids", withExtension: "json")!))
+}
+
+
+extension CBPeripheralState: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .connected:     return "connected"
+        case .connecting:    return "connecting"
+        case .disconnected:  return "disconnected"
+        case .disconnecting: return "disconnecting"
+        default:             return "unknown"
+        }
+    }
 }
 
 

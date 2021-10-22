@@ -94,7 +94,10 @@ class MiaoMiao: Transmitter {
                 sensor = Sensor(transmitter: self)
                 main.app.sensor = sensor
             }
-            if buffer.count == 0 { sensor!.lastReadingDate = main.app.lastReadingDate }
+            if buffer.count == 0 {
+                main.app.lastReadingDate = main.app.lastConnectionDate
+                sensor!.lastReadingDate = main.app.lastConnectionDate
+            }
             buffer.append(data)
             log("\(name): partial buffer size: \(buffer.count)")
             if buffer.count >= 363 {

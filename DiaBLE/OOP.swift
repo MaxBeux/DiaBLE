@@ -493,7 +493,7 @@ extension MainDelegate {
             let json: [String: Any] = [
                 "userId": 1,
                 "list": [
-                    ["timestamp": "\(Int(Date().timeIntervalSince1970 * 1000))",
+                    ["timestamp": "\(Int64(Date().timeIntervalSince1970 * 1000))",
                      "content": sensor.fram.hex]
                 ]
             ]

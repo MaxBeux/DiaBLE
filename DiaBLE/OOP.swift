@@ -505,7 +505,7 @@ extension MainDelegate {
                     log("OOP: data: \(oopData)")
                 }
             } catch {
-                log("NFC: OOP error: \(error.localizedDescription)")
+                log("OOP: error: \(error.localizedDescription)")
             }
         }
 

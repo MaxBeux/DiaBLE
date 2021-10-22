@@ -16,6 +16,7 @@ struct Monitor: View {
 
     @State private var readingCountdown: Int = 0
 
+    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -30,6 +31,8 @@ struct Monitor: View {
                         if app.lastReadingDate != Date.distantPast {
                             Text(app.lastReadingDate.shortTime)
                             Text("\(Int(Date().timeIntervalSince(app.lastReadingDate)/60)) min ago").font(.system(size: 10)).lineLimit(1)
+                                .onReceive(minuteTimer) { _ in
+                                }
                         } else {
                             Text("---")
                         }

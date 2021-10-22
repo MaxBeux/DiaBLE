@@ -90,7 +90,7 @@ struct Monitor: View {
                                     .fixedSize()
                                     .font(Font.callout.monospacedDigit()).foregroundColor(.orange)
                                     .onReceive(timer) { _ in
-                                        readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastReadingDate))
+                                        readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
                                     }
                             }
                         }

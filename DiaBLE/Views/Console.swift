@@ -289,7 +289,7 @@ struct ConsoleSidebar: View {
                     .fixedSize()
                     .font(Font.caption.monospacedDigit()).foregroundColor(.orange)
                     .onReceive(timer) { _ in
-                        readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastReadingDate))
+                        readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
                     }
             } else {
                 Text("").fixedSize().font(Font.caption.monospacedDigit()).hidden()

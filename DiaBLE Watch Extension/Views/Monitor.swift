@@ -89,7 +89,7 @@ struct Monitor: View {
                                 if app.lastReadingDate == Date.distantPast {
                                     readingCountdown = 0
                                 } else {
-                                    readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastReadingDate))
+                                    readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
                                 }
                             }
                     }

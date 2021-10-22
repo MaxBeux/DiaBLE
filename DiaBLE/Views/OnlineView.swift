@@ -49,7 +49,7 @@ struct OnlineView: View {
                                 .fixedSize()
                                 .foregroundColor(.orange).font(Font.caption.monospacedDigit())
                                 .onReceive(timer) { _ in
-                                    readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastReadingDate))
+                                    readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
                                 }
                         }
 

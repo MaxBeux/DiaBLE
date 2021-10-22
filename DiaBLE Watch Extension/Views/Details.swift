@@ -8,6 +8,7 @@ struct Details: View {
     @EnvironmentObject var settings: Settings
 
     @State private var readingCountdown: Int = 0
+    @State private var secondsSinceLastConnection: Int = 0
     @State private var minutesSinceLastReading: Int = 0
     @State private var showingCalibrationInfoForm = false
 
@@ -19,11 +20,17 @@ struct Details: View {
 
             Form {
 
-                if app.device == nil && app.sensor == nil {
+                if app.status.starts(with: "Scanning") {
                     HStack {
-                        Spacer()
-                        Text("No device connected").foregroundColor(.red)
-                        Spacer()
+                        Text("\(app.status)").font(.footnote).foregroundColor(.white)
+                    }
+                } else {
+                    if app.device == nil && app.sensor == nil {
+                        HStack {
+                            Spacer()
+                            Text("No device connected").foregroundColor(.red)
+                            Spacer()
+                        }
                     }
                 }
 
@@ -43,7 +50,23 @@ struct Details: View {
                                 HStack {
                                     Text("State")
                                     Spacer()
-                                    Text(app.device.peripheral!.state.description.capitalized).foregroundColor(.yellow)
+                                    Text(app.device.peripheral!.state.description.capitalized)
+                                        .foregroundColor(app.device.peripheral!.state == .connected ? .green : .red)
+                                }
+                            }
+                            if app.device.lastConnectionDate != .distantPast {
+                                HStack {
+                                    Text("Since")
+                                    Spacer()
+                                    Text("\(secondsSinceLastConnection) s ago")
+                                        .foregroundColor(app.device.state == .connected ? .yellow : .red)
+                                        .onReceive(timer) { _ in
+                                            if app.device != nil {
+                                            secondsSinceLastConnection = Int(Date().timeIntervalSince(app.device.lastConnectionDate))
+                                            } else {
+                                                secondsSinceLastConnection = 1
+                                            }
+                                        }
                                 }
                             }
                             if settings.debugLevel > 0 && app.device.peripheral != nil {
@@ -143,7 +166,7 @@ struct Details: View {
                     Section(header: Text("Sensor")) {
 
                         HStack {
-                            Text("Status")
+                            Text("State")
                             Spacer()
                             Text(app.sensor.state.description)
                                 .foregroundColor(app.sensor.state == .active ? .green : .red)

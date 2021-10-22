@@ -7,9 +7,12 @@ struct Details: View {
     @EnvironmentObject var settings: Settings
 
     @State private var readingCountdown: Int = 0
+    @State private var secondsSinceLastConnection: Int = 0
     @State private var minutesSinceLastReading: Int = 0
     @State private var showingNFCAlert = false
     @State private var showingCalibrationInfoForm = false
+
+    // FIXME: updates only every 3-4 seconds when called from Monitor
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
@@ -21,11 +24,17 @@ struct Details: View {
 
             Form {
 
-                if app.device == nil && app.sensor == nil {
+                if app.status.starts(with: "Scanning") {
                     HStack {
-                        Spacer()
-                        Text("No device connected").foregroundColor(.red)
-                        Spacer()
+                        Text("\(app.status)").font(.footnote).foregroundColor(.white)
+                    }
+                } else {
+                    if app.device == nil && app.sensor == nil {
+                        HStack {
+                            Spacer()
+                            Text("No device connected").foregroundColor(.red)
+                            Spacer()
+                        }
                     }
                 }
 
@@ -45,7 +54,23 @@ struct Details: View {
                                 HStack {
                                     Text("State")
                                     Spacer()
-                                    Text(app.device.peripheral!.state.description.capitalized).foregroundColor(.yellow)
+                                    Text(app.device.peripheral!.state.description.capitalized)
+                                        .foregroundColor(app.device.peripheral!.state == .connected ? .green : .red)
+                                }
+                            }
+                            if app.device.lastConnectionDate != .distantPast {
+                                HStack {
+                                    Text("Since")
+                                    Spacer()
+                                    Text("\(secondsSinceLastConnection) s ago")
+                                        .foregroundColor(app.device.state == .connected ? .yellow : .red)
+                                        .onReceive(timer) { _ in
+                                            if let device = app.device {
+                                            secondsSinceLastConnection = Int(Date().timeIntervalSince(device.lastConnectionDate))
+                                            } else {
+                                                secondsSinceLastConnection = 1
+                                            }
+                                        }
                                 }
                             }
                             if settings.debugLevel > 0 && app.device.peripheral != nil {
@@ -146,7 +171,7 @@ struct Details: View {
                     Section(header: Text("Sensor").font(.headline)) {
 
                         HStack {
-                            Text("Status")
+                            Text("State")
                             Spacer()
                             Text(app.sensor.state.description)
                                 .foregroundColor(app.sensor.state == .active ? .green : .red)
@@ -335,7 +360,6 @@ struct Details: View {
 
             VStack(spacing: 0) {
 
-                // FIXME: updates only every 3-4 seconds
                 Button {
                     app.main.rescan()
                 } label: {

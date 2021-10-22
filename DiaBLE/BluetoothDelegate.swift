@@ -397,7 +397,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     public func centralManager(_ manager: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         let name = peripheral.name ?? "an unnamed peripheral"
         app.device?.state = peripheral.state
-        app.deviceState = app.device.state.description.capitalized
+        app.deviceState = peripheral.state.description.capitalized
         if error != nil {
             log("Bluetooth: \(name) has disconnected.")
             let errorCode = CBError.Code(rawValue: (error! as NSError).code)! // 6 = timed out when out of range
@@ -409,13 +409,17 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 app.device.buffer = Data()
                 centralManager.connect(peripheral, options: nil)
             } else {
-                app.device = nil
-                app.transmitter = nil
+                app.device.lastConnectionDate = Date()
+                app.lastConnectionDate = app.device.lastConnectionDate
+                // app.device = nil
+                // app.transmitter = nil
             }
         } else {
             log("Bluetooth: stopped connecting with \(name).")
-            app.device = nil
-            app.transmitter = nil
+            app.device.lastConnectionDate = Date()
+            app.lastConnectionDate = app.device.lastConnectionDate
+            // app.device = nil
+            // app.transmitter = nil
         }
     }
 

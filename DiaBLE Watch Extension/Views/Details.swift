@@ -343,7 +343,7 @@ struct Details: View {
                             .foregroundColor(.orange).font(Font.footnote.monospacedDigit())
                             .onReceive(timer) { _ in
                                 // workaround: watchOS fails converting the interval to an Int32
-                                if app.lastReadingDate == Date.distantPast {
+                                if app.lastConnectionDate == Date.distantPast {
                                     readingCountdown = 0
                                 } else {
                                     readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))

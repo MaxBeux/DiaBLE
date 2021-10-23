@@ -12,8 +12,8 @@ struct Details: View {
     @State private var minutesSinceLastReading: Int = 0
     @State private var showingCalibrationInfoForm = false
 
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack {

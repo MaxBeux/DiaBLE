@@ -17,8 +17,8 @@ struct Monitor: View {
     @State private var readingCountdown: Int = 0
     @State private var minutesSinceLastReading: Int = 0
 
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         NavigationView {
@@ -197,9 +197,15 @@ struct Monitor: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("DiaBLE  \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String)  -  Monitor")
                 .onAppear {
+                    timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+                    minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
                     if app.lastReadingDate != Date.distantPast {
                         minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                     }
+                }
+                .onDisappear {
+                    timer.upstream.connect().cancel()
+                    minuteTimer.upstream.connect().cancel()
                 }
                 .toolbar {
 

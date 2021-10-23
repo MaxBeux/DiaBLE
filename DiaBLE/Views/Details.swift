@@ -14,8 +14,8 @@ struct Details: View {
 
     // FIXME: updates only every 3-4 seconds when called from Monitor
 
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack {

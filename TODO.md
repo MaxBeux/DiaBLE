@@ -9,7 +9,6 @@ FIXME
 * @Published classes nonsense
 * Libre 3:
   - Catalyst doesn't detect it
-* Details update only every 3-4 seconds when linked from Monitor
 
 
 TODO

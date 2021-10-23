@@ -142,17 +142,14 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
             }
         }
         if !settings.disabledNotifications {
-            if !settings.mutedAudio {
-                let times = currentGlucose > Int(settings.alarmHigh) ? 3 : 4
-                let pause = times == 3 ? 1.0 : 5.0 / 6
-                for s in 0 ..< times {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(s) * pause) {
-                        WKInterfaceDevice.current().play(.notification) // FIXME: vibrates only once
-                    }
+            let hapticDirection: WKHapticType = currentGlucose > Int(settings.alarmHigh) ? .directionUp : .directionDown
+            WKInterfaceDevice.current().play(hapticDirection)
+            let times = currentGlucose > Int(settings.alarmHigh) ? 3 : 4
+            let pause = times == 3 ? 1.0 : 5.0 / 6
+            for s in 0 ..< times {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(s) * pause) {
+                    WKInterfaceDevice.current().play(.notification) // FIXME: vibrates only once
                 }
-            } else {
-                let hapticDirection: WKHapticType = currentGlucose > Int(settings.alarmHigh) ? .directionUp : .directionDown
-                WKInterfaceDevice.current().play(hapticDirection)
             }
         }
     }
@@ -330,7 +327,7 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
         }
 
         // TODO:
-        extendedSession.start(at: app.lastReadingDate + Double(settings.readingInterval * 60) - 5.0)
+        extendedSession.start(at: max(app.lastReadingDate, app.lastConnectionDate) + Double(settings.readingInterval * 60) - 5.0)
     }
 
 

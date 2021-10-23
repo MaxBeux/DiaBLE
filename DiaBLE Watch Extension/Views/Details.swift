@@ -365,9 +365,9 @@ struct Details: View {
 
                 Spacer()
 
-            }
+            }.edgesIgnoringSafeArea(.bottom).padding(-40).offset(y: 40)
+
         }
-        .edgesIgnoringSafeArea(.bottom)
         .navigationTitle("Details")
         .foregroundColor(Color(.lightGray))
         .buttonStyle(.plain)

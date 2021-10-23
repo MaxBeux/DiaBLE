@@ -96,7 +96,6 @@ struct Monitor: View {
                         }
                     }
 
-
                     Graph().frame(width: 31 * 7 + 60, height: 150)
 
                     if !(editingCalibration && showingCalibrationParameters) {

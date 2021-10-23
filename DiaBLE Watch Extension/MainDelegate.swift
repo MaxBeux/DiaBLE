@@ -148,7 +148,7 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
             let pause = times == 3 ? 1.0 : 5.0 / 6
             for s in 0 ..< times {
                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(s) * pause) {
-                    WKInterfaceDevice.current().play(.notification) // FIXME: vibrates only once
+                    WKInterfaceDevice.current().play(.notification)
                 }
             }
         }

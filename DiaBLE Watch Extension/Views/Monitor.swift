@@ -96,9 +96,7 @@ struct Monitor: View {
                 }
             }
 
-
             Graph().frame(width: 31 * 4 + 60, height: 80)
-
 
             VStack(spacing: 0) {
 

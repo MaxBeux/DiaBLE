@@ -31,7 +31,7 @@ struct Graph: View {
                 }.fill(Color.green).opacity(0.15)
             }
 
-            // Target glucose low and high labels at the right
+            // Target glucose low and high labels at the right, timespan on the left
             GeometryReader { geometry in
                 ZStack {
                     Text("\(settings.targetHigh.units)")

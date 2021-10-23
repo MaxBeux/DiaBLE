@@ -62,7 +62,7 @@ struct Details: View {
                                 HStack {
                                     Text("Since")
                                     Spacer()
-                                    Text("\(secondsSinceLastConnection) s ago")
+                                    Text("\(secondsSinceLastConnection.minsAndSecsFormattedInterval) ago")
                                         .foregroundColor(app.device.state == .connected ? .yellow : .red)
                                         .onReceive(timer) { _ in
                                             if let device = app.device {

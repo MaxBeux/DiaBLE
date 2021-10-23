@@ -139,6 +139,7 @@ extension Int {
         let hours = formatter.string(from: TimeInterval((self * 60) % 86400))!
         return "\(days) \(hours)"
     }
+    var minsAndSecsFormattedInterval: String { "\(self / 60 > 0 ? "\(self / 60) m  " : "")\(self % 60) s" }
 }
 
 

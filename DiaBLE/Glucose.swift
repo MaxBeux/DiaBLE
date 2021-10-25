@@ -24,13 +24,18 @@ struct Glucose: Identifiable, Codable {
 
         // lower 9 of 11 bits in the measurement field 0xe/0xb
         static let SD14_FIFO_OVERFLOW  = DataQuality(rawValue: 0x0001)
+        /// delta between two successive of 4 filament measurements (1-2, 2-3, 3-4) >  fram[332] (Libre 1: 90)
+        /// indicates too much jitter in measurement
         static let FILTER_DELTA        = DataQuality(rawValue: 0x0002)
         static let WORK_VOLTAGE        = DataQuality(rawValue: 0x0004)
         static let PEAK_DELTA_EXCEEDED = DataQuality(rawValue: 0x0008)
         static let AVG_DELTA_EXCEEDED  = DataQuality(rawValue: 0x0010)
+        /// NFC activity detected during a measurement which was retried since corrupted by NFC power usage
         static let RF                  = DataQuality(rawValue: 0x0020)
         static let REF_R               = DataQuality(rawValue: 0x0040)
+        /// measurement result exceeds 0x3FFF (14 bits)
         static let SIGNAL_SATURATED    = DataQuality(rawValue: 0x0080)
+        /// 4 times averaged raw reading < fram[330] (minimumThreshold: 150)
         static let SENSOR_SIGNAL_LOW   = DataQuality(rawValue: 0x0100)
 
         /// as an error code it actually indicates that one or more errors occurred in the

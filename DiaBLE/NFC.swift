@@ -323,7 +323,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
             } else if manufacturer == "7a" {
                 manufacturer.append(" (Abbott Diabetes Care)")
                 sensor.type = .libre3
-                sensor.securityGeneration = 3 // TODO: test
+                sensor.securityGeneration = 3 // TODO
             }
             log("NFC: IC manufacturer code: 0x\(manufacturer)")
             log("NFC: IC serial number: \(tag.icSerialNumber.hex)")
@@ -390,7 +390,6 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                             invalidateMessage = description.prefix(1).uppercased() + description.dropFirst() + " by \(sensor.type)"
                         }
                     }
-                    // TODO
 
                     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                     sensor.detailFRAM()

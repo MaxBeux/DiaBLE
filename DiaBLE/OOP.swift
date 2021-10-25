@@ -405,8 +405,6 @@ extension MainDelegate {
 
     func applyOOP(sensor: Sensor?) async {
 
-        // TODO: review OOP restore
-
         if !settings.usingOOP {
             DispatchQueue.main.async {
                 self.app.oopGlucose = 0
@@ -608,7 +606,6 @@ extension Sensor {
                 log("\(type) computed activation command: \(activationCommand.code.hex.uppercased()) \(activationCommand.parameters.hex.uppercased())" )
             }
         } catch {
-            // TODO: server error and response
             log("OOP: error while testing activation command: \(error.localizedDescription)")
         }
 

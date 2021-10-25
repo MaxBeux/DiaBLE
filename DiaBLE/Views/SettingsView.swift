@@ -74,7 +74,6 @@ struct SettingsView: View {
 
                 VStack {
 
-                    // TODO
                     HStack {
                         Spacer()
                         Picker(selection: $settings.displayingMillimoles, label: Text("Unit")) {

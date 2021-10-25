@@ -311,7 +311,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
 
 
-        // TODO
+        // TODO: Libre 3
 
         if serviceUUID == Abbott.UUID.libre3unknownService.rawValue {
             log("Bluetooth: sending the very first Libre 3 BLE command: 0x11")

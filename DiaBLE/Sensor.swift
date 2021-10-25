@@ -129,7 +129,7 @@ class Sensor: ObservableObject, Logging {
     @Published var maxLife: Int = 0
     @Published var initializations: Int = 0
 
-    var crcReport: String = ""    // TODO
+    var crcReport: String = ""
 
     var securityGeneration: Int = 0
 
@@ -215,8 +215,8 @@ class Sensor: ObservableObject, Logging {
                 if j < 0 { j += 16 }
                 let offset = 28 + j * 6         // body[4 ..< 100]
                 let rawValue = readBits(fram, offset, 0, 0xe)
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff // TODO: test
-                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9 // TODO: test
+                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff
+                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
                 let hasError = readBits(fram, offset, 0x19, 0x1) != 0
                 let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
                 var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
@@ -244,8 +244,8 @@ class Sensor: ObservableObject, Logging {
                 if j < 0 { j += 32 }
                 let offset = 124 + j * 6    // body[100 ..< 292]
                 let rawValue = readBits(fram, offset, 0, 0xe)
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff // TODO: test
-                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9 // TODO: test
+                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff
+                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
                 let hasError = readBits(fram, offset, 0x19, 0x1) != 0
                 let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
                 var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2

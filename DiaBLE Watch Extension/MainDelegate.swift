@@ -135,7 +135,6 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
             audioPlayer.play()
             _ = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) {
                 _ in audioPlayer.stop()
-                // FIXME:
                 do {
                     try AVAudioSession.sharedInstance().setActive(false)
                 } catch { }
@@ -276,7 +275,7 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
         if currentGlucose > 0 && (currentGlucose > Int(settings.alarmHigh) || currentGlucose < Int(settings.alarmLow)) {
             log("ALARM: current glucose: \(currentGlucose.units) (settings: high: \(settings.alarmHigh.units), low: \(settings.alarmLow.units), muted: \(settings.mutedAudio ? "yes" : "no"))")
             playAlarm()
-            //            if (settings.calendarTitle == "" || !settings.calendarAlarmIsOn) && !settings.disabledNotifications { // TODO: notifications settings
+            //            if (settings.calendarTitle == "" || !settings.calendarAlarmIsOn) && !settings.disabledNotifications {
             //                title += "  \(settings.glucoseUnit)"
             //                title += "  \(app.oopAlarm.shortDescription)  \(app.oopTrend.symbol)"
             //                let content = UNMutableNotificationContent()

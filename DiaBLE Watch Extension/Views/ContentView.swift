@@ -43,7 +43,6 @@ struct ContentView: View {
                         }
                     }
                     HStack(spacing: 10) {
-                        // TODO
                         NavigationLink(destination: DataView()) {
                             VStack {
                                 Image(systemName: "tray.full.fill").resizable().frame(width: 40, height: 40).offset(y: 4)

@@ -7,13 +7,14 @@ struct Details: View {
     @EnvironmentObject var history: History
     @EnvironmentObject var settings: Settings
 
+    @State private var showingCalibrationInfoForm = false
+
     @State private var readingCountdown: Int = 0
     @State private var secondsSinceLastConnection: Int = 0
     @State private var minutesSinceLastReading: Int = 0
-    @State private var showingCalibrationInfoForm = false
 
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    private let minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack {
@@ -58,7 +59,8 @@ struct Details: View {
                                 HStack {
                                     Text("Since")
                                     Spacer()
-                                    Text("\(secondsSinceLastConnection.minsAndSecsFormattedInterval) ago")
+                                    Text("\(secondsSinceLastConnection.minsAndSecsFormattedInterval)")
+                                        .monospacedDigit()
                                         .foregroundColor(app.device.state == .connected ? .yellow : .red)
                                         .onReceive(timer) { _ in
                                             if app.device != nil {

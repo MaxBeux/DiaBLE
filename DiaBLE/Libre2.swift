@@ -365,7 +365,7 @@ extension Sensor {
 
             // lower 9 bits correspond to measurement errorbits & 0x1FF
             let quality = rawValue == 0 ? Glucose.DataQuality(rawValue: rawTemperature >> 2) : Glucose.DataQuality.OK
-            let qualityFlags = rawValue == 0 ? ((rawTemperature >> 2) & 0x600) >> 9 : 0 // TODO: test
+            let qualityFlags = rawValue == 0 ? ((rawTemperature >> 2) & 0x600) >> 9 : 0
 
             let glucose = Glucose(rawValue: rawValue,
                                   rawTemperature: rawValue != 0 ? rawTemperature : 0,

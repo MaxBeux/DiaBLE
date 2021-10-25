@@ -161,7 +161,6 @@ public class MainDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDele
             audioPlayer.play()
             _ = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) {
                 _ in audioPlayer.stop()
-                // FIXME:
                 do {
                     try AVAudioSession.sharedInstance().setActive(false)
                 } catch { }

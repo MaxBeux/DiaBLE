@@ -217,7 +217,7 @@ class Nightscout: NSObject, Logging {
             "dateString": ISO8601DateFormatter().string(from: $0.date),
             "date": Int64(($0.date.timeIntervalSince1970 * 1000.0).rounded()),
             "sgv": $0.value,
-            "device": $0.source // TODO
+            "device": $0.source
             // "direction": "NOT COMPUTABLE", // TODO
         ] }
         let (json, response) = try await post("api/v1/entries", dictionaryArray)

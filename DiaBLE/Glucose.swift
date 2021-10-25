@@ -24,7 +24,7 @@ struct Glucose: Identifiable, Codable {
 
         // lower 9 of 11 bits in the measurement field 0xe/0xb
         static let SD14_FIFO_OVERFLOW  = DataQuality(rawValue: 0x0001)
-        /// delta between two successive of 4 filament measurements (1-2, 2-3, 3-4) >  fram[332] (Libre 1: 90)
+        /// delta between two successive of 4 filament measurements (1-2, 2-3, 3-4) > fram[332] (Libre 1: 90)
         /// indicates too much jitter in measurement
         static let FILTER_DELTA        = DataQuality(rawValue: 0x0002)
         static let WORK_VOLTAGE        = DataQuality(rawValue: 0x0004)

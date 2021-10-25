@@ -66,7 +66,7 @@ struct Details: View {
                                         .foregroundColor(app.device.state == .connected ? .yellow : .red)
                                         .onReceive(timer) { _ in
                                             if let device = app.device {
-                                            secondsSinceLastConnection = Int(Date().timeIntervalSince(device.lastConnectionDate))
+                                                secondsSinceLastConnection = Int(Date().timeIntervalSince(device.lastConnectionDate))
                                             } else {
                                                 secondsSinceLastConnection = 1
                                             }
@@ -358,26 +358,42 @@ struct Details: View {
 
             Spacer()
 
-            VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 40) {
 
-                Button {
-                    app.main.rescan()
-                } label: {
-                    Image(systemName: "arrow.clockwise.circle").resizable().frame(width: 32, height: 32).foregroundColor(.accentColor)
+                Spacer()
+
+                VStack(spacing: 0) {
+
+                    Button {
+                        app.main.rescan()
+                    } label: {
+                        Image(systemName: "arrow.clockwise.circle").resizable().frame(width: 32, height: 32).foregroundColor(.accentColor)
+                    }
+
+                    Text(!app.deviceState.isEmpty && app.deviceState != "Disconnected" && (readingCountdown > 0 || app.deviceState == "Reconnecting...") ?
+                         "\(readingCountdown) s" : "...")
+                        .fixedSize()
+                        .foregroundColor(.orange).font(Font.caption.monospacedDigit())
+                        .onReceive(timer) { _ in
+                            readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
+                        }
                 }
 
-                Text(!app.deviceState.isEmpty && app.deviceState != "Disconnected" && (readingCountdown > 0 || app.deviceState == "Reconnecting...") ?
-                        "\(readingCountdown) s" : "...")
-                    .fixedSize()
-                    .foregroundColor(.orange).font(Font.caption.monospacedDigit())
-                    .onReceive(timer) { _ in
-                        readingCountdown = settings.readingInterval * 60 - Int(Date().timeIntervalSince(app.lastConnectionDate))
+                Button {
+                    if app.device != nil {
+                        app.main.centralManager.cancelPeripheralConnection(app.device.peripheral!)
                     }
+                } label: {
+                    Image(systemName: "escape").resizable().frame(width: 28, height: 28)
+                        .foregroundColor(.blue)
+                }
+
+                Spacer()
 
             }.padding(.bottom, 8)
 
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Details")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("Details")
         }
         .foregroundColor(Color(.lightGray))
         .onAppear {

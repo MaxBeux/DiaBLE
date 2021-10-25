@@ -327,7 +327,7 @@ struct Details: View {
 
             }
 
-            HStack {
+            HStack(alignment: .top, spacing: 32) {
 
                 Spacer()
 
@@ -352,8 +352,6 @@ struct Details: View {
                     }
                 }
 
-                Spacer()
-
                 Button {
                     if app.device != nil {
                         app.main.centralManager.cancelPeripheralConnection(app.device.peripheral!)
@@ -365,7 +363,7 @@ struct Details: View {
 
                 Spacer()
 
-            }.edgesIgnoringSafeArea(.bottom).padding(-40).offset(y: 40)
+            }.edgesIgnoringSafeArea(.bottom).padding(.vertical, -40).offset(y: 40)
 
         }
         .navigationTitle("Details")

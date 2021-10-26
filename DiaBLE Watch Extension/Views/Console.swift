@@ -144,7 +144,7 @@ struct Console: View {
 
                 Button {
                     DispatchQueue.main.async {
-                        log.text = "Log cleared \(Date().local)\n"
+                        log.text = "Log cleared \(Date().local)"
                     }
                 } label: {
                     VStack {
@@ -154,8 +154,7 @@ struct Console: View {
 
                 Button {
                     settings.reversedLog.toggle()
-                    log.text = log.text.split(separator: "\n").reversed().joined(separator: "\n")
-                    if !settings.reversedLog { log.text.append(" \n") }
+                    log.text = log.text.components(separatedBy: "\n \n").reversed().joined(separator: "\n \n")
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 5).fill(settings.reversedLog ? Color.blue : Color.clear)

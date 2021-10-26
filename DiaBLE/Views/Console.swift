@@ -323,7 +323,7 @@ struct ConsoleSidebar: View {
 
                 Button {
                     DispatchQueue.main.async {
-                        log.text = "Log cleared \(Date().local)\n"
+                        log.text = "Log cleared \(Date().local)"
                     }
                 } label: {
                     VStack {
@@ -336,8 +336,7 @@ struct ConsoleSidebar: View {
 
             Button {
                 settings.reversedLog.toggle()
-                log.text = log.text.split(separator: "\n").reversed().joined(separator: "\n")
-                if !settings.reversedLog { log.text.append(" \n") }
+                log.text = log.text.components(separatedBy: "\n \n").reversed().joined(separator: "\n \n")
             } label: {
                 VStack {
                     Image(systemName: "backward.fill").resizable().frame(width: 12, height: 12).offset(y: 5)

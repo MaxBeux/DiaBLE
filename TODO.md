@@ -2,7 +2,6 @@ FIXME
 -----
 
 * iOS 15:
-  - specifying the destructive actions in .confirmationDialog() causes the preceeding alert not to be displayed when NFC is not supported by a device
   - *"NFC scan success sheet displayed when NFC scan time out"* (https://developer.apple.com/forums/thread/687264)
 * Xcode 13:
   - *"No 'async' operations occur within 'await' expression"* warnings

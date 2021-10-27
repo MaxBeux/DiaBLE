@@ -12,6 +12,7 @@ struct Graph: View {
             history.rawValues.map{$0.value}.max() ?? 0,
             history.factoryValues.map{$0.value}.max() ?? 0,
             history.values.map{$0.value}.max() ?? 0,
+            history.calibratedValues.map{$0.value}.max() ?? 0,
             Int(settings.targetHigh + 20)
         ]
         return Double(maxValues.max()!)

@@ -254,7 +254,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 if requestedRetry > 0 {
                     AudioServicesPlaySystemSound(1520)    // "pop" vibration
                     log("NFC: retry # \(requestedRetry)...")
-                    // await Task.sleep(250_000_000) not needed: too long
+                    // try await Task.sleep(nanoseconds: 250_000_000) not needed: too long
                 }
 
                 // Libre 3 workaround: calling A1 before tag.sytemInfo makes them work
@@ -536,7 +536,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 if retry <= retries {
                     AudioServicesPlaySystemSound(1520)    // "pop" vibration
                     log("NFC: retry # \(retry)...")
-                    await Task.sleep(250_000_000)
+                    try await Task.sleep(nanoseconds: 250_000_000)
 
                 } else {
                     if sensor.securityGeneration < 2 || taskRequest == .none {

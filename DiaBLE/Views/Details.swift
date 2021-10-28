@@ -16,6 +16,20 @@ struct Details: View {
     @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
+
+// TODO:
+//    @ViewBuilder func Row(_ label: String, _ value: String, _ color: Color? = .secondary) -> some View {
+//        if !value.isEmpty {
+//            HStack {
+//                Text(label).foregroundColor(.primary)
+//                Spacer()
+//                Text(value).foregroundColor(color)
+//            } } else {
+//                EmptyView()
+//            }
+//    }
+
+
     var body: some View {
         VStack {
 
@@ -46,7 +60,7 @@ struct Details: View {
                                 HStack {
                                     Text("Name")
                                     Spacer()
-                                    Text(app.device.peripheral!.name!).foregroundColor(.yellow)
+                                    Text(app.device.peripheral!.name!).foregroundColor(.secondary)
                                 }
                             }
                             if app.device.peripheral != nil {
@@ -63,7 +77,7 @@ struct Details: View {
                                     Spacer()
                                     Text("\(secondsSinceLastConnection.minsAndSecsFormattedInterval)")
                                         .monospacedDigit()
-                                        .foregroundColor(app.device.state == .connected ? .yellow : .red)
+                                        .foregroundColor(app.device.state == .connected ? .secondary : .red)
                                         .onReceive(timer) { _ in
                                             if let device = app.device {
                                                 secondsSinceLastConnection = Int(Date().timeIntervalSince(device.lastConnectionDate))
@@ -77,14 +91,14 @@ struct Details: View {
                                 HStack {
                                     Text("Identifier")
                                     Spacer()
-                                    Text(app.device.peripheral!.identifier.uuidString).foregroundColor(.yellow)
+                                    Text(app.device.peripheral!.identifier.uuidString).foregroundColor(.secondary)
                                 }
                             }
                             if app.device.name != app.device.peripheral?.name ?? "Unnamed" {
                                 HStack {
                                     Text("Type")
                                     Spacer()
-                                    Text(app.device.name).foregroundColor(.yellow)
+                                    Text(app.device.name).foregroundColor(.secondary)
                                 }
                             }
                         }
@@ -92,7 +106,7 @@ struct Details: View {
                             HStack {
                                 Text("Serial")
                                 Spacer()
-                                Text(app.device.serial).foregroundColor(.yellow)
+                                Text(app.device.serial).foregroundColor(.secondary)
                             }
                         }
                         Group {
@@ -100,42 +114,42 @@ struct Details: View {
                                 HStack {
                                     Text("Company")
                                     Spacer()
-                                    Text(app.device.company).foregroundColor(.yellow)
+                                    Text(app.device.company).foregroundColor(.secondary)
                                 }
                             }
                             if !app.device.manufacturer.isEmpty {
                                 HStack {
                                     Text("Manufacturer")
                                     Spacer()
-                                    Text(app.device.manufacturer).foregroundColor(.yellow)
+                                    Text(app.device.manufacturer).foregroundColor(.secondary)
                                 }
                             }
                             if !app.device.model.isEmpty {
                                 HStack {
                                     Text("Model")
                                     Spacer()
-                                    Text(app.device.model).foregroundColor(.yellow)
+                                    Text(app.device.model).foregroundColor(.secondary)
                                 }
                             }
                             if !app.device.firmware.isEmpty {
                                 HStack {
                                     Text("Firmware")
                                     Spacer()
-                                    Text(app.device.firmware).foregroundColor(.yellow)
+                                    Text(app.device.firmware).foregroundColor(.secondary)
                                 }
                             }
                             if !app.device.hardware.isEmpty {
                                 HStack {
                                     Text("Hardware")
                                     Spacer()
-                                    Text(app.device.hardware).foregroundColor(.yellow)
+                                    Text(app.device.hardware).foregroundColor(.secondary)
                                 }
                             }
                             if !app.device.software.isEmpty {
                                 HStack {
                                     Text("Software")
                                     Spacer()
-                                    Text(app.device.software).foregroundColor(.yellow)
+                                    Text(app.device.software).foregroundColor(.secondary)
                                 }
                             }
                         }
@@ -143,14 +157,14 @@ struct Details: View {
                             HStack {
                                 Text("MAC Address")
                                 Spacer()
-                                Text(app.device.macAddress.hexAddress).foregroundColor(.yellow)
+                                Text(app.device.macAddress.hexAddress).foregroundColor(.secondary)
                             }
                         }
                         if app.device.rssi != 0 {
                             HStack {
                                 Text("RSSI")
                                 Spacer()
-                                Text("\(app.device.rssi) dB").foregroundColor(.yellow)
+                                Text("\(app.device.rssi) dB").foregroundColor(.secondary)
                             }
                         }
                         if app.device.battery > -1 {
@@ -179,34 +193,34 @@ struct Details: View {
                         HStack {
                             Text("Type")
                             Spacer()
-                            Text("\(app.sensor.type.description)\(app.sensor.patchInfo.hex.hasPrefix("a2") ? " (new 'A2' kind)" : "")").foregroundColor(.yellow)
+                            Text("\(app.sensor.type.description)\(app.sensor.patchInfo.hex.hasPrefix("a2") ? " (new 'A2' kind)" : "")").foregroundColor(.secondary)
                         }
                         if app.sensor.serial != "" {
                             HStack {
                                 Text("Serial")
                                 Spacer()
-                                Text(app.sensor.serial).foregroundColor(.yellow)
+                                Text(app.sensor.serial).foregroundColor(.secondary)
                             }
                         }
                         if app.sensor.region != 0 {
                             HStack {
                                 Text("Region")
                                 Spacer()
-                                Text("\(SensorRegion(rawValue: app.sensor.region)?.description ?? "unknown")").foregroundColor(.yellow)
+                                Text("\(SensorRegion(rawValue: app.sensor.region)?.description ?? "unknown")").foregroundColor(.secondary)
                             }
                         }
                         if app.sensor.maxLife > 0 {
                             HStack {
                                 Text("Maximum Life")
                                 Spacer()
-                                Text(app.sensor.maxLife.formattedInterval).foregroundColor(.yellow)
+                                Text(app.sensor.maxLife.formattedInterval).foregroundColor(.secondary)
                             }
                         }
                         if app.sensor.age > 0 {
                             HStack {
                                 Text("Age")
                                 Spacer()
-                                Text((app.sensor.age + minutesSinceLastReading).formattedInterval).foregroundColor(.yellow)
+                                Text((app.sensor.age + minutesSinceLastReading).formattedInterval).foregroundColor(.secondary)
                                     .onReceive(minuteTimer) { _ in
                                         minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
                                     }
@@ -214,26 +228,26 @@ struct Details: View {
                             HStack {
                                 Text("Started on")
                                 Spacer()
-                                Text("\((app.sensor.lastReadingDate - Double(app.sensor.age) * 60).shortDateTime)").foregroundColor(.yellow)
+                                Text("\((app.sensor.lastReadingDate - Double(app.sensor.age) * 60).shortDateTime)").foregroundColor(.secondary)
                             }
                         }
                         if !app.sensor.uid.isEmpty {
                             HStack {
                                 Text("UID")
                                 Spacer()
-                                Text(app.sensor.uid.hex).foregroundColor(.yellow)
+                                Text(app.sensor.uid.hex).foregroundColor(.secondary)
                             }
                         }
                         if !app.sensor.patchInfo.isEmpty {
                             HStack {
                                 Text("Patch Info")
                                 Spacer()
-                                Text(app.sensor.patchInfo.hex).foregroundColor(.yellow)
+                                Text(app.sensor.patchInfo.hex).foregroundColor(.secondary)
                             }
                             HStack {
                                 Text("Security Generation")
                                 Spacer()
-                                Text("\(app.sensor.securityGeneration)").foregroundColor(.yellow)
+                                Text("\(app.sensor.securityGeneration)").foregroundColor(.secondary)
                             }
                         }
                     }.font(.callout)
@@ -344,6 +358,7 @@ struct Details: View {
                 //     .font(.callout)
                 // }
 
+
                 if settings.debugLevel > 0 {
                     Section(header: Text("Known Devices")) {
                         VStack(alignment: .leading) {
@@ -397,7 +412,6 @@ struct Details: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Details")
         }
-        .foregroundColor(Color(.lightGray))
         .onAppear {
             if app.sensor != nil {
                 minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)

@@ -17,7 +17,6 @@ struct DataView: View {
         ScrollView {
 
             Text("\((app.lastReadingDate != Date.distantPast ? app.lastReadingDate : Date()).dateTime)")
-                .foregroundColor(.white)
 
             if app.status.hasPrefix("Scanning") {
                 Text("Scanning...").foregroundColor(.orange)
@@ -178,7 +177,7 @@ struct DataView: View {
         .edgesIgnoringSafeArea([.bottom])
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         // .font(.system(.footnote, design: .monospaced)).foregroundColor(Color(.lightGray))
-        .font(.footnote).foregroundColor(Color(.lightGray))
+        .font(.footnote)
     }
 }
 

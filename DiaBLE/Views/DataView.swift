@@ -18,7 +18,6 @@ struct DataView: View {
             VStack {
 
                 Text("\((app.lastReadingDate != Date.distantPast ? app.lastReadingDate : Date()).dateTime)")
-                    .foregroundColor(.white)
 
                 if app.status.hasPrefix("Scanning") {
                     Text("Scanning...").foregroundColor(.orange)
@@ -164,7 +163,7 @@ struct DataView: View {
                     .listStyle(.plain)
                 }
             }
-            .font(.system(.caption, design: .monospaced)).foregroundColor(Color(.lightGray))
+            .font(.system(.caption, design: .monospaced))
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("Data")
 

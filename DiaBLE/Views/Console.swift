@@ -20,6 +20,8 @@ struct Console: View {
     @EnvironmentObject var log: Log
     @EnvironmentObject var settings: Settings
 
+    @Environment(\.colorScheme) var colorScheme
+
     @State private var showingNFCAlert = false
     @State private var showingUnlockConfirmationDialog = false
     @State private var showingResetConfirmationDialog = false
@@ -65,12 +67,12 @@ struct Console: View {
                             .padding(4)
                     }
                 }
-                .font(.system(.footnote, design: .monospaced)).foregroundColor(Color(.lightGray))
+                .font(.system(.footnote, design: .monospaced)).foregroundColor(colorScheme == .dark ? Color(.lightGray) : Color(.darkGray))
 
                 ConsoleSidebar(showingNFCAlert: $showingNFCAlert)
             }
         }
-        .background(Color.black)
+        // .background(Color.black)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Console")
         .toolbar {
@@ -307,7 +309,7 @@ struct ConsoleSidebar: View {
             }
             .background(settings.debugLevel == 1 ? Color.accentColor : Color.clear)
             .clipShape(RoundedRectangle(cornerRadius: 5))
-            .foregroundColor(settings.debugLevel == 1 ? .black : .accentColor)
+            .foregroundColor(settings.debugLevel == 1 ? Color(.systemBackground) : .accentColor)
             .padding(.bottom, 6)
 
             VStack(spacing: 0) {
@@ -346,7 +348,7 @@ struct ConsoleSidebar: View {
             .background(settings.reversedLog ? Color.accentColor : Color.clear)
             .border(Color.accentColor, width: 3)
             .cornerRadius(5)
-            .foregroundColor(settings.reversedLog ? .black : .accentColor)
+            .foregroundColor(settings.reversedLog ? Color(.systemBackground) : .accentColor)
 
 
             Button {

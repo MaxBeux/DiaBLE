@@ -3,6 +3,8 @@ import SwiftUI
 
 struct HamburgerMenu: View {
 
+    @Environment(\.colorScheme) var colorScheme
+
     @Binding var showingHamburgerMenu: Bool
 
     @State private var showingHelp = false
@@ -90,7 +92,7 @@ struct HamburgerMenu: View {
                         }
 
                         VStack {
-                            Image(systemName: "envelope.fill")
+                            Image(systemName: colorScheme == .dark ? "envelope.fill" : "envelope")
                             Link(Data(base64Encoded: "Z3VpZG8uc29yYW56aW9AZ21haWwuY29t")!.string,
                                  destination: URL(string: "mailto:\(Data(base64Encoded: "Z3VpZG8uc29yYW56aW9AZ21haWwuY29t")!.string)")!)
                         }

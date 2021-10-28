@@ -72,7 +72,6 @@ struct Console: View {
                 ConsoleSidebar(showingNFCAlert: $showingNFCAlert)
             }
         }
-        // .background(Color.black)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("Console")
         .toolbar {

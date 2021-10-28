@@ -87,17 +87,6 @@ class Device: ObservableObject, Logging {
         self.main = main
     }
 
-    // For UI testing
-    convenience init(battery: Int, rssi: Int = 0, firmware: String = "", manufacturer: String = "", hardware: String = "", macAddress: Data = Data()) {
-        self.init()
-        self.battery = battery
-        self.rssi = rssi
-        self.firmware = firmware
-        self.manufacturer = manufacturer
-        self.hardware = hardware
-        self.macAddress = macAddress
-    }
-
     func write(_ data: Data, for uuid: String = "", _ writeType: CBCharacteristicWriteType = .withoutResponse) {
         if uuid.isEmpty {
             peripheral?.writeValue(data, for: writeCharacteristic!, type: writeType)
@@ -108,7 +97,6 @@ class Device: ObservableObject, Logging {
 
     func read(_ data: Data, for uuid: String) {
     }
-
 
     func readValue(for uuid: BLE.UUID) {
         peripheral?.readValue(for: characteristics[uuid.rawValue]!)

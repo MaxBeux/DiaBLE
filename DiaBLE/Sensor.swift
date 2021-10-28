@@ -370,15 +370,6 @@ class Sensor: ObservableObject, Logging {
         }
     }
 
-    // For UI testing
-    convenience init(state: SensorState, serial: String = "", age: Int = 0, uid: SensorUid = Data(), patchInfo: PatchInfo = Data()) {
-        self.init()
-        self.state = state
-        self.serial = serial
-        self.age = age
-        self.uid = uid
-        self.patchInfo = patchInfo
-    }
 
     func detailFRAM() {
         if encryptedFram.count > 0 && fram.count >= 344 {

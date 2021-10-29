@@ -16,6 +16,21 @@ struct Details: View {
     @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
+
+    // TODO:
+    @ViewBuilder func Row(_ label: String, _ value: String, foregroundColor: Color? = .secondary) -> some View {
+        if !value.isEmpty {
+            HStack {
+                Text(label).foregroundColor(.primary)
+                Spacer()
+                Text(value).foregroundColor(foregroundColor)
+            }
+        } else {
+            EmptyView()
+        }
+    }
+
+
     var body: some View {
         VStack {
 
@@ -40,17 +55,12 @@ struct Details: View {
                     Section(header: Text("Device")) {
 
                         Group {
-                            HStack {
-                                Text("Name")
-                                Spacer()
-                                Text(app.device.peripheral?.name ?? app.device.name).foregroundColor(.secondary)
-                            }
-                            HStack {
-                                Text("State")
-                                Spacer()
-                                Text((app.device.peripheral?.state ?? app.device.state).description.capitalized)
-                                    .foregroundColor((app.device.peripheral?.state ?? app.device.state) == .connected ? .green : .red)
-                            }
+
+                            Row("Name", app.device.peripheral?.name ?? app.device.name)
+
+                            Row("State", (app.device.peripheral?.state ?? app.device.state).description.capitalized,
+                                foregroundColor: (app.device.peripheral?.state ?? app.device.state) == .connected ? .green : .red)
+
                             if app.device.lastConnectionDate != .distantPast {
                                 HStack {
                                     Text("Since")
@@ -82,6 +92,7 @@ struct Details: View {
                                 }
                             }
                         }
+
                         if !app.device.serial.isEmpty {
                             HStack {
                                 Text("Serial")
@@ -89,6 +100,7 @@ struct Details: View {
                                 Text(app.device.serial).foregroundColor(.secondary)
                             }
                         }
+
                         Group {
                             if !app.device.company.isEmpty && app.device.company != "< Unknown >" {
                                 HStack {

@@ -18,15 +18,16 @@ struct Details: View {
 
 
     // TODO:
-    @ViewBuilder func Row(_ label: String, _ value: String, _ color: Color? = .secondary) -> some View {
+    @ViewBuilder func Row(_ label: String, _ value: String, foregroundColor: Color? = .secondary) -> some View {
         if !value.isEmpty {
             HStack {
                 Text(label).foregroundColor(.primary)
                 Spacer()
-                Text(value).foregroundColor(color)
-            } } else {
-                EmptyView()
+                Text(value).foregroundColor(foregroundColor)
             }
+        } else {
+            EmptyView()
+        }
     }
 
 
@@ -56,17 +57,12 @@ struct Details: View {
                     Section(header: Text("Device").font(.headline)) {
 
                         Group {
-                            HStack {
-                                Text("Name")
-                                Spacer()
-                                Text(app.device.peripheral?.name ?? app.device.name).foregroundColor(.secondary)
-                            }
-                            HStack {
-                                Text("State")
-                                Spacer()
-                                Text((app.device.peripheral?.state ?? app.device.state).description.capitalized)
-                                    .foregroundColor((app.device.peripheral?.state ?? app.device.state) == .connected ? .green : .red)
-                            }
+
+                            Row("Name", app.device.peripheral?.name ?? app.device.name)
+
+                            Row("State", (app.device.peripheral?.state ?? app.device.state).description.capitalized,
+                                foregroundColor: (app.device.peripheral?.state ?? app.device.state) == .connected ? .green : .red)
+
                             if app.device.lastConnectionDate != .distantPast {
                                 HStack {
                                     Text("Since")
@@ -98,6 +94,7 @@ struct Details: View {
                                 }
                             }
                         }
+
                         if !app.device.serial.isEmpty {
                             HStack {
                                 Text("Serial")
@@ -105,6 +102,7 @@ struct Details: View {
                                 Text(app.device.serial).foregroundColor(.secondary)
                             }
                         }
+
                         Group {
                             if !app.device.company.isEmpty && app.device.company != "< Unknown >" {
                                 HStack {

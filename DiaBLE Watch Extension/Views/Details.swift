@@ -40,20 +40,16 @@ struct Details: View {
                     Section(header: Text("Device")) {
 
                         Group {
-                            if app.device.peripheral?.name != nil {
-                                HStack {
-                                    Text("Name")
-                                    Spacer()
-                                    Text(app.device.peripheral!.name!).foregroundColor(.secondary)
-                                }
+                            HStack {
+                                Text("Name")
+                                Spacer()
+                                Text(app.device.peripheral?.name ?? app.device.name).foregroundColor(.secondary)
                             }
-                            if app.device.peripheral != nil {
-                                HStack {
-                                    Text("State")
-                                    Spacer()
-                                    Text(app.device.peripheral!.state.description.capitalized)
-                                        .foregroundColor(app.device.peripheral!.state == .connected ? .green : .red)
-                                }
+                            HStack {
+                                Text("State")
+                                Spacer()
+                                Text((app.device.peripheral?.state ?? app.device.state).description.capitalized)
+                                    .foregroundColor((app.device.peripheral?.state ?? app.device.state) == .connected ? .green : .red)
                             }
                             if app.device.lastConnectionDate != .distantPast {
                                 HStack {
@@ -64,7 +60,7 @@ struct Details: View {
                                         .foregroundColor(app.device.state == .connected ? .secondary : .red)
                                         .onReceive(timer) { _ in
                                             if app.device != nil {
-                                            secondsSinceLastConnection = Int(Date().timeIntervalSince(app.device.lastConnectionDate))
+                                                secondsSinceLastConnection = Int(Date().timeIntervalSince(app.device.lastConnectionDate))
                                             } else {
                                                 secondsSinceLastConnection = 1
                                             }
@@ -340,7 +336,7 @@ struct Details: View {
                         Image(systemName: "arrow.clockwise.circle").resizable().frame(width: 24, height: 24)
                             .foregroundColor(.blue)
                         Text(!app.deviceState.isEmpty && app.deviceState != "Disconnected" && (readingCountdown > 0 || app.deviceState == "Reconnecting...") ?
-                                "\(readingCountdown) s" : "...")
+                             "\(readingCountdown) s" : "...")
                             .fixedSize()
                             .foregroundColor(.orange).font(Font.footnote.monospacedDigit())
                             .onReceive(timer) { _ in

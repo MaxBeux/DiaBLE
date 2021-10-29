@@ -17,17 +17,17 @@ struct Details: View {
     @State private var minuteTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
 
-// TODO:
-//    @ViewBuilder func Row(_ label: String, _ value: String, _ color: Color? = .secondary) -> some View {
-//        if !value.isEmpty {
-//            HStack {
-//                Text(label).foregroundColor(.primary)
-//                Spacer()
-//                Text(value).foregroundColor(color)
-//            } } else {
-//                EmptyView()
-//            }
-//    }
+    // TODO:
+    @ViewBuilder func Row(_ label: String, _ value: String, _ color: Color? = .secondary) -> some View {
+        if !value.isEmpty {
+            HStack {
+                Text(label).foregroundColor(.primary)
+                Spacer()
+                Text(value).foregroundColor(color)
+            } } else {
+                EmptyView()
+            }
+    }
 
 
     var body: some View {
@@ -56,20 +56,16 @@ struct Details: View {
                     Section(header: Text("Device").font(.headline)) {
 
                         Group {
-                            if app.device.peripheral?.name != nil {
-                                HStack {
-                                    Text("Name")
-                                    Spacer()
-                                    Text(app.device.peripheral!.name!).foregroundColor(.secondary)
-                                }
+                            HStack {
+                                Text("Name")
+                                Spacer()
+                                Text(app.device.peripheral?.name ?? app.device.name).foregroundColor(.secondary)
                             }
-                            if app.device.peripheral != nil {
-                                HStack {
-                                    Text("State")
-                                    Spacer()
-                                    Text(app.device.peripheral!.state.description.capitalized)
-                                        .foregroundColor(app.device.peripheral!.state == .connected ? .green : .red)
-                                }
+                            HStack {
+                                Text("State")
+                                Spacer()
+                                Text((app.device.peripheral?.state ?? app.device.state).description.capitalized)
+                                    .foregroundColor((app.device.peripheral?.state ?? app.device.state) == .connected ? .green : .red)
                             }
                             if app.device.lastConnectionDate != .distantPast {
                                 HStack {

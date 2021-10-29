@@ -98,14 +98,15 @@ extension AppState {
 
         let app = AppState()
 
-        let transmitter = Transmitter()
-        transmitter.type = .transmitter(.abbott); transmitter.battery = 54; transmitter.rssi =  -75; transmitter.firmware = "4.56"; transmitter.manufacturer = "Acme Inc."; transmitter.hardware = "2.3"; transmitter.macAddress = Data([0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF])
+        let transmitter = Abbott()
+        transmitter.type = .transmitter(.abbott); transmitter.name = "Thingy"; transmitter.battery = 54; transmitter.rssi =  -75; transmitter.firmware = "4.56"; transmitter.manufacturer = "Acme Inc."; transmitter.hardware = "2.3"; transmitter.macAddress = Data([0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF]); transmitter.state = .connected; transmitter.lastConnectionDate = Date() - 5
         app.transmitter = transmitter
         app.device = app.transmitter
 
         let sensor = Sensor()
         sensor.state = .active; sensor.serial = "3MH001DG75W"; sensor.age = 18705; sensor.uid = Data("2fe7b10000a407e0".bytes); sensor.patchInfo = Data("9d083001712b".bytes)
         app.sensor = sensor
+        app.device.serial = sensor.serial
 
         app.selectedTab = tab
         app.currentGlucose = 234

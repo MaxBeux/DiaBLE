@@ -1,13 +1,20 @@
 import Foundation
 import AVFoundation
 
-
-// https://github.com/ivalkou/LibreTools/blob/master/Sources/LibreTools/NFC/NFCManager.swift
-
-
 #if !os(watchOS)
 
 import CoreNFC
+
+
+// https://github.com/ivalkou/LibreTools/blob/master/Sources/LibreTools/NFC/NFCManager.swift
+
+// https://fortinetweb.s3.amazonaws.com/fortiguard/research/techreport.pdf
+// https://github.com/travisgoodspeed/goodtag/wiki/RF430TAL152H
+// https://github.com/travisgoodspeed/GoodV/blob/master/app/src/main/java/com/kk4vcz/goodv/NfcRF430TAL.java
+// https://github.com/cryptax/misc-code/blob/master/glucose-tools/readdump.py
+// https://github.com/travisgoodspeed/goodtag/blob/master/firmware/gcmpatch.c
+// https://github.com/captainbeeheart/openfreestyle/blob/master/docs/reverse.md
+
 
 extension NFC {
 

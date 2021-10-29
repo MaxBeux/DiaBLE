@@ -227,8 +227,6 @@ class Sensor: ObservableObject, Logging {
         }
     }
 
-    @Published var initialPatchInfo: PatchInfo = Data()
-
     var uid: SensorUid = Data() {
         willSet(uid) {
             serial = serialNumber(uid: uid, family: self.family)
@@ -351,15 +349,13 @@ class Sensor: ObservableObject, Logging {
     }
 
     // Libre 2 and BLE streaming parameters
+    @Published var initialPatchInfo: PatchInfo = Data()
     var streamingUnlockCode: UInt32 = 42
     @Published var streamingUnlockCount: UInt16 = 0
 
     // Gen2
     var streamingAuthenticationData: Data = Data()    // 10 bytes built by verifyEnableStreamingResponse()
 
-
-    init() {
-    }
 
     init(transmitter: Transmitter? = nil, main: MainDelegate? = nil) {
         self.transmitter = transmitter

@@ -56,7 +56,7 @@ struct SettingsView: View {
                     settings.calibrating.toggle()
                     app.main.didParseSensor(app.sensor)
                 } label: {
-                    Image(systemName: settings.calibrating ? "tuningfork" : "tuningfork").resizable().frame(width: 20, height: 20).foregroundColor(settings.calibrating ? .blue : .white)
+                    Image(systemName: settings.calibrating ? "tuningfork" : "tuningfork").resizable().frame(width: 20, height: 20).foregroundColor(settings.calibrating ? .blue : .primary)
                 }
 
                 Spacer()

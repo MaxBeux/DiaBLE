@@ -40,7 +40,7 @@ struct Details: View {
 
                 if app.status.starts(with: "Scanning") {
                     HStack {
-                        Text("\(app.status)").font(.footnote).foregroundColor(.white)
+                        Text("\(app.status)").font(.footnote)
                     }
                 } else {
                     if app.device == nil && app.sensor == nil {
@@ -57,7 +57,6 @@ struct Details: View {
                     Section(header: Text("Device").font(.headline)) {
 
                         Group {
-
                             Row("Name", app.device.peripheral?.name ?? app.device.name)
 
                             Row("State", (app.device.peripheral?.state ?? app.device.state).description.capitalized,
@@ -79,95 +78,40 @@ struct Details: View {
                                         }
                                 }
                             }
+
                             if settings.debugLevel > 0 && app.device.peripheral != nil {
-                                HStack {
-                                    Text("Identifier")
-                                    Spacer()
-                                    Text(app.device.peripheral!.identifier.uuidString).foregroundColor(.secondary)
-                                }
+                                Row("Identifier", app.device.peripheral!.identifier.uuidString)
                             }
+
                             if app.device.name != app.device.peripheral?.name ?? "Unnamed" {
-                                HStack {
-                                    Text("Type")
-                                    Spacer()
-                                    Text(app.device.name).foregroundColor(.secondary)
-                                }
+                                Row("Type", app.device.name)
                             }
                         }
 
-                        if !app.device.serial.isEmpty {
-                            HStack {
-                                Text("Serial")
-                                Spacer()
-                                Text(app.device.serial).foregroundColor(.secondary)
-                            }
-                        }
+                        Row("Serial", app.device.serial)
 
                         Group {
                             if !app.device.company.isEmpty && app.device.company != "< Unknown >" {
-                                HStack {
-                                    Text("Company")
-                                    Spacer()
-                                    Text(app.device.company).foregroundColor(.secondary)
-                                }
+                                Row("Company", app.device.company)
                             }
-                            if !app.device.manufacturer.isEmpty {
-                                HStack {
-                                    Text("Manufacturer")
-                                    Spacer()
-                                    Text(app.device.manufacturer).foregroundColor(.secondary)
-                                }
-                            }
-                            if !app.device.model.isEmpty {
-                                HStack {
-                                    Text("Model")
-                                    Spacer()
-                                    Text(app.device.model).foregroundColor(.secondary)
-                                }
-                            }
-                            if !app.device.firmware.isEmpty {
-                                HStack {
-                                    Text("Firmware")
-                                    Spacer()
-                                    Text(app.device.firmware).foregroundColor(.secondary)
-                                }
-                            }
-                            if !app.device.hardware.isEmpty {
-                                HStack {
-                                    Text("Hardware")
-                                    Spacer()
-                                    Text(app.device.hardware).foregroundColor(.secondary)
-                                }
-                            }
-                            if !app.device.software.isEmpty {
-                                HStack {
-                                    Text("Software")
-                                    Spacer()
-                                    Text(app.device.software).foregroundColor(.secondary)
-                                }
-                            }
+                            Row("Manufacturer", app.device.manufacturer)
+                            Row("Model", app.device.model)
+                            Row("Firmware", app.device.firmware)
+                            Row("Hardware", app.device.hardware)
+                            Row("Software", app.device.software)
                         }
+
                         if app.device.macAddress.count > 0 {
-                            HStack {
-                                Text("MAC Address")
-                                Spacer()
-                                Text(app.device.macAddress.hexAddress).foregroundColor(.secondary)
-                            }
+                            Row("MAC Addres", app.device.macAddress.hexAddress)
                         }
+
                         if app.device.rssi != 0 {
-                            HStack {
-                                Text("RSSI")
-                                Spacer()
-                                Text("\(app.device.rssi) dB").foregroundColor(.secondary)
-                            }
+                            Row("RSSI", "\(app.device.rssi) dB")
                         }
+
                         if app.device.battery > -1 {
-                            HStack {
-                                Text("Battery")
-                                Spacer()
-                                Text("\(app.device.battery)%")
-                                    .foregroundColor(app.device.battery > 10 ? .green : .red)
-                            }
+                            Row("Battery", "\(app.device.battery)%",
+                                foregroundColor: app.device.battery > 10 ? .green : .red)
                         }
 
                     }.font(.callout)
@@ -178,72 +122,34 @@ struct Details: View {
 
                     Section(header: Text("Sensor").font(.headline)) {
 
-                        HStack {
-                            Text("State")
-                            Spacer()
-                            Text(app.sensor.state.description)
-                                .foregroundColor(app.sensor.state == .active ? .green : .red)
-                        }
-                        HStack {
-                            Text("Type")
-                            Spacer()
-                            Text("\(app.sensor.type.description)\(app.sensor.patchInfo.hex.hasPrefix("a2") ? " (new 'A2' kind)" : "")").foregroundColor(.secondary)
-                        }
-                        if app.sensor.serial != "" {
-                            HStack {
-                                Text("Serial")
-                                Spacer()
-                                Text(app.sensor.serial).foregroundColor(.secondary)
-                            }
-                        }
-                        if app.sensor.region != 0 {
-                            HStack {
-                                Text("Region")
-                                Spacer()
-                                Text("\(SensorRegion(rawValue: app.sensor.region)?.description ?? "unknown")").foregroundColor(.secondary)
-                            }
-                        }
+                        Row("State", app.sensor.state.description,
+                            foregroundColor: app.sensor.state == .active ? .green : .red)
+
+                        Row("Type", "\(app.sensor.type.description)\(app.sensor.patchInfo.hex.hasPrefix("a2") ? " (new 'A2' kind)" : "")")
+
+                        Row("Serial", app.sensor.serial)
+
+                        Row("Region", SensorRegion(rawValue: app.sensor.region)?.description ?? "unknown")
+
                         if app.sensor.maxLife > 0 {
-                            HStack {
-                                Text("Maximum Life")
-                                Spacer()
-                                Text(app.sensor.maxLife.formattedInterval).foregroundColor(.secondary)
-                            }
+                            Row("Maximum Life", app.sensor.maxLife.formattedInterval)
                         }
+
                         if app.sensor.age > 0 {
-                            HStack {
-                                Text("Age")
-                                Spacer()
-                                Text((app.sensor.age + minutesSinceLastReading).formattedInterval).foregroundColor(.secondary)
-                                    .onReceive(minuteTimer) { _ in
-                                        minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
-                                    }
-                            }
-                            HStack {
-                                Text("Started on")
-                                Spacer()
-                                Text("\((app.sensor.lastReadingDate - Double(app.sensor.age) * 60).shortDateTime)").foregroundColor(.secondary)
-                            }
+                            Row("Age", (app.sensor.age + minutesSinceLastReading).formattedInterval)
+                                .onReceive(minuteTimer) { _ in
+                                    minutesSinceLastReading = Int(Date().timeIntervalSince(app.sensor.lastReadingDate)/60)
+                                }
+                            Row("Started on", (app.sensor.lastReadingDate - Double(app.sensor.age) * 60).shortDateTime)
                         }
-                        if !app.sensor.uid.isEmpty {
-                            HStack {
-                                Text("UID")
-                                Spacer()
-                                Text(app.sensor.uid.hex).foregroundColor(.secondary)
-                            }
-                        }
+
+                        Row("UID", app.sensor.uid.hex)
+
                         if !app.sensor.patchInfo.isEmpty {
-                            HStack {
-                                Text("Patch Info")
-                                Spacer()
-                                Text(app.sensor.patchInfo.hex).foregroundColor(.secondary)
-                            }
-                            HStack {
-                                Text("Security Generation")
-                                Spacer()
-                                Text("\(app.sensor.securityGeneration)").foregroundColor(.secondary)
-                            }
+                            Row("Patch Info", app.sensor.patchInfo.hex)
+                            Row("Security Generation", "\(app.sensor.securityGeneration)")
                         }
+
                     }.font(.callout)
                 }
 

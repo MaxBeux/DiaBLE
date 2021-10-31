@@ -30,8 +30,8 @@ struct Monitor: View {
 
                     VStack(spacing: 0) {
                         if app.lastReadingDate != Date.distantPast {
-                            Text(app.lastReadingDate.shortTime)
-                            Text("\(minutesSinceLastReading) min ago").font(.system(size: 10)).lineLimit(1)
+                            Text(app.lastReadingDate.shortTime).monospacedDigit()
+                            Text("\(minutesSinceLastReading) min ago").font(.system(size: 10)).monospacedDigit().lineLimit(1)
                                 .onReceive(minuteTimer) { _ in
                                     minutesSinceLastReading = Int(Date().timeIntervalSince(app.lastReadingDate)/60)
                                 }
@@ -40,7 +40,7 @@ struct Monitor: View {
                         }
                     }
                     .font(.footnote).frame(maxWidth: .infinity, alignment: .trailing ).foregroundColor(Color(.lightGray))
-                    .onChange(of: app.lastReadingDate) { readingDate in
+                    .onReceive(app.$lastReadingDate) { readingDate in
                         minutesSinceLastReading = Int(Date().timeIntervalSince(readingDate)/60)
                     }
 

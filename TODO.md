@@ -15,7 +15,8 @@ TODO
 
 * restore support for glucose.space and calibration
 * Apple Watch app: snapshots, workout and extended runtime background sessions, complications
-* log: limit to a number of readings, prepend time, Share menu, record to a file
+* log: limit to a number of readings, prepend time, Share menu, record to a file, add Logger support
+
 * profile and avoid retain cycles
 
 

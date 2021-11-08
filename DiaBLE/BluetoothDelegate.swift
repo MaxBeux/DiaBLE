@@ -124,6 +124,10 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             }
             settings.activeSensorSerial = app.device.serial
 
+        } else if name!.lowercased().hasPrefix("blu") {
+            app.transmitter = BluCon(peripheral: peripheral, main: main)
+            app.device = app.transmitter
+
         } else if name!.prefix(6) == "Bubble" {
             app.transmitter = Bubble(peripheral: peripheral, main: main)
             app.device = app.transmitter
@@ -250,7 +254,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 msg += " (Libre 3 data read); avoid enabling notifications because of 'Encryption is insufficient' error"
 
 
-            } else if uuid == Abbott.dataReadCharacteristicUUID || uuid == Bubble.dataReadCharacteristicUUID || uuid == MiaoMiao.dataReadCharacteristicUUID {
+            } else if uuid == Abbott.dataReadCharacteristicUUID || uuid == BluCon.dataReadCharacteristicUUID || uuid == Bubble.dataReadCharacteristicUUID || uuid == MiaoMiao.dataReadCharacteristicUUID {
                 app.device.readCharacteristic = characteristic
                 msg += " (data read)"
 
@@ -260,7 +264,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     msg += "; enabling notifications"
                 }
 
-            } else if uuid == Abbott.dataWriteCharacteristicUUID || uuid == Bubble.dataWriteCharacteristicUUID || uuid == MiaoMiao.dataWriteCharacteristicUUID {
+            } else if uuid == Abbott.dataWriteCharacteristicUUID || uuid == BluCon.dataWriteCharacteristicUUID || uuid == Bubble.dataWriteCharacteristicUUID || uuid == MiaoMiao.dataWriteCharacteristicUUID {
                 msg += " (data write)"
                 app.device.writeCharacteristic = characteristic
 
@@ -433,7 +437,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             msg += ", error type \(errorCode!.rawValue): \(error.localizedDescription)"
         }
 
-        if let errorCode = errorCode, errorCode.rawValue == 14 { // Peer removed pairing information
+        if let errorCode = errorCode, errorCode.rawValue == 14 { // Peer removed pairing information (i.e. BluCon)
             main.errorStatus("Failed to connect: \(error!.localizedDescription)")
         } else {
             msg += "; retrying..."
@@ -448,7 +452,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     public func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         let name = peripheral.name ?? "an unnamed peripheral"
         var characteristicString = characteristic.uuid.uuidString
-        if [Abbott.dataWriteCharacteristicUUID, Bubble.dataWriteCharacteristicUUID, MiaoMiao.dataWriteCharacteristicUUID].contains(characteristicString) {
+        if [Abbott.dataWriteCharacteristicUUID, BluCon.dataWriteCharacteristicUUID, Bubble.dataWriteCharacteristicUUID, MiaoMiao.dataWriteCharacteristicUUID].contains(characteristicString) {
             characteristicString = "data write"
         }
         if error != nil {
@@ -466,7 +470,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     public func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         let name = peripheral.name ?? "an unnamed peripheral"
         var characteristicString = characteristic.uuid.uuidString
-        if [Abbott.dataReadCharacteristicUUID, Bubble.dataReadCharacteristicUUID, MiaoMiao.dataReadCharacteristicUUID].contains(characteristicString) {
+        if [Abbott.dataReadCharacteristicUUID, BluCon.dataReadCharacteristicUUID, Bubble.dataReadCharacteristicUUID, MiaoMiao.dataReadCharacteristicUUID].contains(characteristicString) {
             characteristicString = "data read"
         }
         var msg = "Bluetooth: \(name) did update notification state for \(characteristicString) characteristic"
@@ -480,7 +484,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     public func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         let name = peripheral.name ?? "an unnamed peripheral"
         var characteristicString = characteristic.uuid.uuidString
-        if [Abbott.dataReadCharacteristicUUID, Bubble.dataReadCharacteristicUUID, MiaoMiao.dataReadCharacteristicUUID].contains(characteristicString) {
+        if [Abbott.dataReadCharacteristicUUID, BluCon.dataReadCharacteristicUUID, Bubble.dataReadCharacteristicUUID, MiaoMiao.dataReadCharacteristicUUID].contains(characteristicString) {
             characteristicString = "data read"
         }
 
@@ -545,7 +549,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     app.transmitter.buffer = Data()
                 }
 
-            } else if app.device.type == .transmitter(.bubble) || app.device.type == .transmitter(.miaomiao) {
+            } else if app.device.type == .transmitter(.blu) || app.device.type == .transmitter(.bubble) || app.device.type == .transmitter(.miaomiao) {
                 var headerLength = 0
                 if app.device.type == .transmitter(.miaomiao) && characteristic.uuid.uuidString == MiaoMiao.dataReadCharacteristicUUID {
                     headerLength = 18 + 1

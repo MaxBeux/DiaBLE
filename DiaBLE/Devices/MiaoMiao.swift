@@ -90,6 +90,7 @@ class MiaoMiao: Transmitter {
                 }
             }
         } else {
+            // TODO: instantiate specifically a Libre2() (when detecting A4 in the uid, i. e.)
             if sensor == nil {
                 sensor = Sensor(transmitter: self)
                 main.app.sensor = sensor

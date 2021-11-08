@@ -5,9 +5,6 @@ import Foundation
 // https://github.com/JohanDegraeve/xdripswift/tree/master/xdrip/BluetoothTransmitter/CGM/Libre/Blucon
 
 
-// TODO: complete restore from 2020/04/11 https://github.com/nshtg/DiaBLE/commit/4a6ed3e5ee488019b71b467c5b503a500403d1c0
-
-
 class BluCon: Transmitter {
     override class var type: DeviceType { DeviceType.transmitter(.blu) }
     override class var name: String { "BluCon" }
@@ -25,6 +22,8 @@ class BluCon: Transmitter {
             }
         }
     }
+
+    override class var knownUUIDs: [String] { UUID.allCases.map{$0.rawValue} }
 
     override class var dataServiceUUID: String             { UUID.data.rawValue }
     override class var dataWriteCharacteristicUUID: String { UUID.dataWrite.rawValue }
@@ -100,7 +99,7 @@ class BluCon: Transmitter {
     func write(request: RequestType) {
         write(Data(request.rawValue.bytes), .withResponse)
         currentRequest = request
-        main.log("\(name): did write request for \(request)")
+        log("\(name): did write request for \(request)")
     }
 
 
@@ -114,7 +113,7 @@ class BluCon: Transmitter {
         let dataHex = data.hex
 
         let response = ResponseType(rawValue: dataHex)
-        main.log("\(name) response: \(response?.description ?? "data") (0x\(dataHex))")
+        log("\(name) response: \(response?.description ?? "data") (0x\(dataHex))")
 
         guard data.count > 0 else { return }
 
@@ -130,17 +129,19 @@ class BluCon: Transmitter {
             write(request: .sensorInfo)
 
         } else {
+            // TODO: instantiate specifically a Libre2() (when detecting A4 in the uid, i. e.)
             if sensor == nil {
                 sensor = Sensor(transmitter: self)
                 main.app.sensor = sensor
             }
             if dataHex.hasPrefix(ResponseType.sensorInfo.rawValue) {
                 sensor!.uid = Data(data[3...10])
+                main.settings.patchUid = sensor!.uid
                 // FIXME: doesn't work with Libre 2
                 if let sensorState = SensorState(rawValue: data[17]) {
                     sensor!.state = sensorState
                 }
-                main.log("\(name): patch uid: \(sensor!.uid.hex), serial number: \(sensor!.serial), sensor state: \(sensor!.state)")
+                log("\(name): patch uid: \(sensor!.uid.hex), serial number: \(sensor!.serial), sensor state: \(sensor!.state)")
                 if sensor!.state == .active {
                     write(request: .ack)
                 } else {
@@ -157,7 +158,7 @@ class BluCon: Transmitter {
             } else if dataHex.hasPrefix(ResponseType.firmware.rawValue) {
                 let firmware = dataHex.bytes.dropFirst(2).map { String($0) }.joined(separator: ".")
                 self.firmware = firmware
-                main.log("\(name): firmware: \(firmware)")
+                log("\(name): firmware: \(firmware)")
                 write(request: .battery)
 
             } else if dataHex.hasPrefix(ResponseType.battery.rawValue) {
@@ -173,17 +174,23 @@ class BluCon: Transmitter {
                 if currentRequest == .patchInfo {
                     let patchInfo = Data(data[3...])
                     sensor!.patchInfo = patchInfo
-                    main.log("\(name): patch info: \(sensor!.patchInfo.hex) (sensor type: \(sensor!.type.rawValue))")
+                    main.settings.patchInfo = sensor!.patchInfo
+                    log("\(name): patch info: \(sensor!.patchInfo.hex) (sensor type: \(sensor!.type.rawValue))")
                 } else if currentRequest == .patchUid {
                     sensor!.uid = Data(data[4...])
-                    main.log("\(name): patch uid: \(sensor!.uid.hex), serial number: \(sensor!.serial)")
+                    main.settings.patchUid = sensor!.uid
+                    main.settings.activeSensorSerial = sensor!.serial
+                    log("\(name): patch uid: \(sensor!.uid.hex), serial number: \(sensor!.serial)")
                 }
                 write(request: .fram)
 
             } else if dataHex.hasPrefix(ResponseType.multipleBlocks.rawValue) {
-                if buffer.count == 0 { sensor!.lastReadingDate = main.app.lastReadingDate }
+                if buffer.count == 0 {
+                    main.app.lastReadingDate = main.app.lastConnectionDate
+                    sensor!.lastReadingDate = main.app.lastConnectionDate
+                }
                 buffer.append(data.suffix(from: 4))
-                main.log("\(name): partial buffer size: \(buffer.count)")
+                log("\(name): partial buffer size: \(buffer.count)")
                 if buffer.count == 344 {
                     write(request: .sleep)
                     let fram = buffer[..<344]

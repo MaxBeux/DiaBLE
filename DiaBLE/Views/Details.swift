@@ -102,7 +102,7 @@ struct Details: View {
                         }
 
                         if app.device.macAddress.count > 0 {
-                            Row("MAC Addres", app.device.macAddress.hexAddress)
+                            Row("MAC Address", app.device.macAddress.hexAddress)
                         }
 
                         if app.device.rssi != 0 {

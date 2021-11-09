@@ -298,6 +298,8 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 switch sensorType {
                 case .libre2:
                     sensor = Libre2(main: main)
+                case .libreProH:
+                    sensor = LibrePro(main: main)
                 default:
                     sensor = Sensor(main: main)
                 }
@@ -323,7 +325,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
             var firmware = "RF430"
             switch tag.identifier[2] {
             case 0xA0: firmware += "TAL152H Libre 1 A0 "
-            case 0xA4: firmware += "TAL160H Libre 2 A4 "
+            case 0xA4: firmware += "TAL160H Libre 2/Pro A4 "
             case 0x00: firmware = "unknown Libre 3 "
             default:   firmware += " unknown "
             }
@@ -398,7 +400,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
             }
 
-            var blocks = 43
+            var blocks = sensor.type != .libreProH ? 43 : 22
             if taskRequest == .readFRAM {
                 if sensor.type == .libre1 {
                     blocks = 244

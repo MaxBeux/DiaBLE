@@ -25,7 +25,7 @@ The project started as a single script for the iPad Swift Playgrounds to test th
 
 I am targeting only the latest betas of Xcode and iOS. The new `async / await` and *actors* introduced in Swift 5.5 and iOS 15 probably would require a total rewrite of DiaBLE's foundations, as well as the enhanced *Gen2* protocols adopted by the recent Libre 2 Sense/US/CA/AU which haven't been reversed yet.
 
-Please refer to the [TODOs](https://github.com/gui-dos/DiaBLE/blob/master/TODO.md) list for the up-to-date status of all the current limitations and known bugs of this prototype.
+**Please refer to the [TODOs](https://github.com/gui-dos/DiaBLE/blob/master/TODO.md) list for the up-to-date status of all the current limitations and known bugs of this prototype. [Discussions](https://github.com/gui-dos/DiaBLE/discussions) are open.**
 
 ***Note***: the exploitation which allows to reset and reactivate a Libre 1 is well known to the Vendor and was unveiled already during [BlackAlps 2019](https://www.youtube.com/watch?v=Y9vtGmxh1IQ) and in [PoC||GTFO 0x20](https://archive.org/stream/pocorgtfo20#page/n6/mode/1up).
 

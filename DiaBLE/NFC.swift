@@ -385,7 +385,9 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
                     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                     sensor.detailFRAM()
+
                     taskRequest = .none
+
                     if invalidateMessage.isEmpty {
                         session.invalidate()
                     } else {
@@ -394,7 +396,6 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                     return
                 }
 
-                taskRequest = .none
             }
 
             var blocks = 43

@@ -89,7 +89,7 @@ struct Console: View {
 
                     Button {
                         if app.main.nfc.isAvailable {
-                            app.main.settings.logging = true
+                            settings.logging = true
                             app.main.nfc.taskRequest = .enableStreaming
                         } else {
                             showingNFCAlert = true
@@ -104,7 +104,7 @@ struct Console: View {
 
                     Button {
                         if app.main.nfc.isAvailable {
-                            app.main.settings.logging = true
+                            settings.logging = true
                             app.main.nfc.taskRequest = .readFRAM
                         } else {
                             showingNFCAlert = true
@@ -118,7 +118,7 @@ struct Console: View {
 
                         Button {
                             if app.main.nfc.isAvailable {
-                                app.main.settings.logging = true
+                                settings.logging = true
                                 showingUnlockConfirmationDialog = true
                             } else {
                                 showingNFCAlert = true
@@ -129,7 +129,7 @@ struct Console: View {
 
                         Button {
                             if app.main.nfc.isAvailable {
-                                app.main.settings.logging = true
+                                settings.logging = true
                                 showingResetConfirmationDialog = true
                             } else {
                                 showingNFCAlert = true
@@ -140,7 +140,7 @@ struct Console: View {
 
                         Button {
                             if app.main.nfc.isAvailable {
-                                app.main.settings.logging = true
+                                settings.logging = true
                                 showingProlongConfirmationDialog = true
                             } else {
                                 showingNFCAlert = true
@@ -151,7 +151,7 @@ struct Console: View {
 
                         Button {
                             if app.main.nfc.isAvailable {
-                                app.main.settings.logging = true
+                                settings.logging = true
                                 showingActivateConfirmationDialog = true
                             } else {
                                 showingNFCAlert = true
@@ -168,7 +168,7 @@ struct Console: View {
 
                     Button {
                         if app.main.nfc.isAvailable {
-                            app.main.settings.logging = true
+                            settings.logging = true
                             app.main.nfc.taskRequest = .dump
                         } else {
                             showingNFCAlert = true

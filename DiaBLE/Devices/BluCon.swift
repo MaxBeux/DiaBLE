@@ -65,31 +65,31 @@ class BluCon: Transmitter {
     }
 
 
-    // read single block:    01-0d-0e-01-<block number>
-    // read multiple blocks: 01-0d-0f-02-<start block>-<end block>
+    // read single block:    01 0d 0e 01 <block number>
+    // read multiple blocks: 01 0d 0f 02 <start block> <end block>
 
     enum RequestType: String, CustomStringConvertible {
-        case none            = ""
-        case ack             = "810a00"
-        case sleep           = "010c0e00"
-        case sensorInfo      = "010d0900"
-        case fram            = "010d0f02002b"
-        case battery         = "010d0a00"
-        case firmware        = "010d0b00"
-        case patchUid        = "010e0003260100"
-        case patchInfo       = "010e000302a107"
+        case none         = ""
+        case ack          = "81 0a 00"
+        case sleep        = "01 0c 0e 00"
+        case sensorInfo   = "01 0d 09 00"
+        case fram         = "01 0d 0f 02 00 2b"
+        case battery      = "01 0d 0a 00"
+        case firmware     = "01 0d 0b 00"
+        case patchUid     = "01 0e 00 03 26 01 00"
+        case patchInfo    = "01 0e 00 03 02 a1 07"
 
         var description: String {
             switch self {
-            case .none:            return "none"
-            case .ack:             return "ack"
-            case .sleep:           return "sleep"
-            case .sensorInfo:      return "sensor info"
-            case .fram:            return "fram"
-            case .battery:         return "battery"
-            case .firmware:        return "firmware"
-            case .patchUid:        return "patch uid"
-            case .patchInfo:       return "patch info"
+            case .none:        return "none"
+            case .ack:         return "ack"
+            case .sleep:       return "sleep"
+            case .sensorInfo:  return "sensor info"
+            case .fram:        return "fram"
+            case .battery:     return "battery"
+            case .firmware:    return "firmware"
+            case .patchUid:    return "patch uid"
+            case .patchInfo:   return "patch info"
             }
         }
     }
@@ -193,8 +193,7 @@ class BluCon: Transmitter {
                 log("\(name): partial buffer size: \(buffer.count)")
                 if buffer.count == 344 {
                     write(request: .sleep)
-                    let fram = buffer[..<344]
-                    sensor!.fram = Data(fram)
+                    sensor!.fram = Data(buffer)
                     main.status("\(sensor!.type)  +  \(name)")
                 }
             }

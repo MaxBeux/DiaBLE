@@ -13,19 +13,19 @@ class Abbott: Transmitter {
 
         case libre3data           = "089810CC-EF89-11E9-81B4-2A2AE2DBCCE4"
 
-        /// Requests past data by sending 13 zero-terminated bytes, receives 10 zero-terminated bytes at the end of stream
+        /// Requests past data by writing 13 zero-terminated bytes, notifies 10 zero-terminated bytes at the end of stream
         case libre3data0x1338     = "08981338-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Write"]
 
-        /// Receiving error when activating notifications: Encryption is insufficient
+        // Receiving "Encryption is insufficient" error when activating notifications
         case libre3data0x1482     = "08981482-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Read"]
 
-        /// The Libre 3 sends every minute 35 bytes as two packets of 15 + 20 zero-terminated bytes
+        /// Notifies every minute 35 bytes as two packets of 15 + 20 zero-terminated bytes
         case libre3data0x177A     = "0898177A-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify"]
 
-        /// Receiving a first stream of 20-byte packets of past data while the curve is drawn on display
+        /// Notifies a first stream of 20-byte packets of past data while the curve is drawn on display
         case libre3data0x195A     = "0898195A-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify"]
 
-        /// Receiving a second longer stream of 20-byte packets of past data
+        /// Notifies a second longer stream of 20-byte packets of past data
         case libre3data0x1AB8     = "08981AB8-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify"]
 
         case libre3data0x1BEE     = "08981BEE-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify"]
@@ -33,11 +33,11 @@ class Abbott: Transmitter {
 
         case libre3unknownService = "0898203A-EF89-11E9-81B4-2A2AE2DBCCE4"
 
-        /// Writes the very first command: 0x11, receiving the two bytes 08 17
+        /// After writing the very first command: 0x11, notifies  the two bytes 08 17
         case libre3unknown0x2198  = "08982198-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Write"]
 
-        /// Receives the very first data: 20 + 5 bytes, then three
-        /// 20 + 20 + 6 packets starting with 0000, 1200, 2400 are written
+        /// After notifying  the very first data made of 20 + 5 bytes, three packets of 20 + 20 + 6 bytes
+        /// starting with 00 00, 12 00, 24 00 are written
         case libre3unknown0x22CE  = "089822CE-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Write"]
 
         case libre3unknown0x23FA  = "089823FA-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Write"]
@@ -254,10 +254,10 @@ class Abbott: Transmitter {
                 if buffer.count == 25 {
                     log("Libre 3: received first data (\(buffer.count) bytes):\n\(buffer.hexDump())")
                     buffer = Data()
-                    log("Libre 3: test sending 0x22CE packets of 20 + 20 + 6 bytes prefixed by 0000, 1200, 2400")
-                    write(Data("0000000000000000000000000000000000000000".bytes), for: uuid, .withResponse)
-                    write(Data("1200000000000000000000000000000000000000".bytes), for: uuid, .withResponse)
-                    write(Data("240000000000".bytes), for: uuid, .withResponse)
+                    log("Libre 3: test sending 0x22CE packets of 20 + 20 + 6 bytes prefixed by 00 00, 12 00, 24 00")
+                    write(Data("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00".bytes), for: uuid, .withResponse)
+                    write(Data("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00".bytes), for: uuid, .withResponse)
+                    write(Data("24 00 00 00 00 00".bytes), for: uuid, .withResponse)
 
                     // TODO:
                     // writing 002400000000 causes the error `The value's length is invalid`...

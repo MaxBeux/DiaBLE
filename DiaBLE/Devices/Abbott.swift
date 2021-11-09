@@ -36,7 +36,7 @@ class Abbott: Transmitter {
         /// After writing the very first command: 0x11, notifies  the two bytes 08 17
         case libre3unknown0x2198  = "08982198-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Write"]
 
-        /// After notifying  the very first data made of 20 + 5 bytes, three packets of 20 + 20 + 6 bytes
+        /// After notifying the very first data made of 20 + 5 bytes, three packets of 20 + 20 + 6 bytes
         /// starting with 00 00, 12 00, 24 00 are written
         case libre3unknown0x22CE  = "089822CE-EF89-11E9-81B4-2A2AE2DBCCE4"  // ["Notify", "Write"]
 
@@ -117,16 +117,14 @@ class Abbott: Transmitter {
     var authenticationState: AuthenticationState = .notAuthenticated
     var sessionInfo = Data()    // 7 + 18 bytes
 
-    var uid: SensorUid = Data()
-
     override func parseManufacturerData(_ data: Data) {
         if data.count > 7 {
-            let sensorUid: SensorUid = Data(data[2...7]) + [0x07, 0xe0]
+            let uid = Data(data[2...7]) + [0x07, 0xe0]
             // Gen2: doesn't match the sensor Uid, for example 0bf3b7aa48b8 != 5f5aab0100a4
             if data[7] == 0xa4 {
-                uid = sensorUid
+                sensorUid = uid
             }
-            log("Bluetooth: advertised \(name)'s UID: \(sensorUid.hex)")
+            log("Bluetooth: advertised \(name)'s UID: \(uid.hex)")
         }
     }
 

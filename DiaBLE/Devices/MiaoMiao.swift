@@ -110,8 +110,9 @@ class MiaoMiao: Transmitter {
                 log("\(name): battery: \(battery), firmware: \(firmware), hardware: \(hardware)")
 
                 sensor!.age = Int(buffer[3]) << 8 + Int(buffer[4])
-                sensor!.uid = Data(buffer[5...12])
-                main.settings.patchUid = sensor!.uid
+                sensorUid = Data(buffer[5...12])
+                sensor!.uid = sensorUid
+                main.settings.patchUid = sensorUid
                 log("\(name): sensor age: \(sensor!.age) minutes (\(String(format: "%.1f", Double(sensor!.age)/60/24)) days), patch uid: \(sensor!.uid.hex)")
 
                 if buffer.count >= 369 {

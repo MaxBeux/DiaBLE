@@ -80,6 +80,7 @@ extension String {
     var base64Data: Data? { Data(base64Encoded: self) }
     var sha1: String { self.data(using: .ascii)!.sha1 }
 
+    /// Converts also spaced strings and hexDump() output
     var bytes: [UInt8] {
         var bytes = [UInt8]()
         if !self.contains(" ") {
@@ -90,7 +91,6 @@ extension String {
                 formIndex(&offset, offsetBy: 2)
             }
         } else {
-            /// Convert hexDump() output
             for line in self.split(separator: "\n") {
                 let column = line.contains("  ") ? line.components(separatedBy: "  ")[1] : String(line)
                 for hex in column.split(separator: " ") {

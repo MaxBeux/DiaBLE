@@ -43,6 +43,7 @@ class AppState: ObservableObject {
 
     var main: MainDelegate!
 
+    // FIXME: @AppStorage prevents managing the "More..." fifth tab item
     @AppStorage("selectedTab") var selectedTab: Tab = .monitor
 
     @Published var currentGlucose: Int = 0

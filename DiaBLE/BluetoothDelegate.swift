@@ -329,7 +329,7 @@ class BluetoothDelegate: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 sensor = Libre2(transmitter: app.transmitter)
                 app.sensor = sensor
                 sensor.state = .active
-                sensor.uid = (app.device as! Abbott).uid
+                sensor.uid = (app.device as! Abbott).sensorUid
                 // TODO
                 settings.patchUid = sensor.uid
 

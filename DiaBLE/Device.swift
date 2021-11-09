@@ -138,6 +138,7 @@ enum TransmitterType: String, CaseIterable, Hashable, Codable, Identifiable {
 
 
 class Transmitter: Device {
+    @Published var sensorUid: SensorUid = Data()
     @Published var sensor: Sensor?
 }
 

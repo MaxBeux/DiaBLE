@@ -9,6 +9,8 @@ FIXME
 * Libre 3:
   - Catalyst doesn't detect it
 * the new Libre2() subclass is not instantiated specifically in Transmitters
+* `@AppStorage(selectedTab)` prevents managing the "More..." fifth tab item
+* Console's Clear button must be tapped twice
 
 
 TODO

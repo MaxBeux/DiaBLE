@@ -135,8 +135,9 @@ class BluCon: Transmitter {
                 main.app.sensor = sensor
             }
             if dataHex.hasPrefix(ResponseType.sensorInfo.rawValue) {
-                sensor!.uid = Data(data[3...10])
-                main.settings.patchUid = sensor!.uid
+                sensorUid = Data(data[3...10])
+                sensor!.uid = sensorUid
+                main.settings.patchUid = sensorUid
                 // FIXME: doesn't work with Libre 2
                 if let sensorState = SensorState(rawValue: data[17]) {
                     sensor!.state = sensorState
@@ -177,8 +178,9 @@ class BluCon: Transmitter {
                     main.settings.patchInfo = sensor!.patchInfo
                     log("\(name): patch info: \(sensor!.patchInfo.hex) (sensor type: \(sensor!.type.rawValue))")
                 } else if currentRequest == .patchUid {
-                    sensor!.uid = Data(data[4...])
-                    main.settings.patchUid = sensor!.uid
+                    sensorUid = Data(data[4...])
+                    sensor!.uid = sensorUid
+                    main.settings.patchUid = sensorUid
                     main.settings.activeSensorSerial = sensor!.serial
                     log("\(name): patch uid: \(sensor!.uid.hex), serial number: \(sensor!.serial)")
                 }

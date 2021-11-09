@@ -100,8 +100,9 @@ class Bubble: Transmitter {
                 main.app.sensor = sensor
             }
             if response == .serialNumber {
-                sensor!.uid = Data(data[2...9])
-                main.settings.patchUid = sensor!.uid
+                sensorUid = Data(data[2...9])
+                sensor!.uid = sensorUid
+                main.settings.patchUid = sensorUid
                 log("\(name): patch uid: \(sensor!.uid.hex)")
 
             } else if response == .patchInfo {

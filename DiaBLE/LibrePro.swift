@@ -78,7 +78,8 @@ class LibrePro: Sensor {
                 var j = trendIndex - 1 - i
                 if j < 0 { j += 16 }
                 let offset = 80 + j * 6                              // body[8 ..< 104]
-                let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF // TODO: test the 13-bit mask
+                // TODO: test the 13-bit mask; use a 8.5 conversion factor?
+                let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
                 let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
                 let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
                 let hasError = readBits(fram, offset, 0x19, 0x1) != 0
@@ -103,22 +104,26 @@ class LibrePro: Sensor {
                 readingDate.addTimeInterval(60.0 * -Double(delay - 15))
             }
 
-            //            for i in 0 ... 31 {
-            //                var j = historyIndex - 1 - i
-            //                if j < 0 { j += 32 }
-            //                let offset = 124 + j * 6    // body[100 ..< 292]
-            //                let rawValue = readBits(fram, offset, 0, 0xe)
-            //                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
-            //                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
-            //                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
-            //                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
-            //                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
-            //                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
-            //                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
-            //                let id = age - delay - i * 15
-            //                let date = id > -1 ? readingDate - Double(i) * 15 * 60 : startDate
-            //                history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
-            //            }
+            // TODO: test whether when history index > 32 we shoud start again from the 22nd block:
+            // (((index - 32) * 6) + 22 * 8) / 8
+
+            for i in 0 ... 31 {
+                var j = historyIndex - 1 - i
+                if j < 0 { j += 32 }
+                let offset = 176 + j * 6
+                // TODO: test the 13-bit mask; use a 8.5 conversion factor?
+                let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
+                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
+                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
+                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
+                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
+                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
+                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
+                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
+                let id = age - delay - i * 15
+                let date = id > -1 ? readingDate - Double(i) * 15 * 60 : startDate
+                history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
+            }
 
 
             // Libre Pro: fram[42...43] (footer[2..3]) corresponds to patchInfo[2...3]

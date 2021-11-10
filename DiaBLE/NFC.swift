@@ -400,7 +400,10 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
             }
 
-            var blocks = sensor.type != .libreProH ? 43 : 22
+
+            // TODO: test whether the Libre Pro first 24 history blocks are always the most recent ones
+
+            var blocks = sensor.type != .libreProH ? 43 : 22 + 24    // (16 * 6 / 8)
             if taskRequest == .readFRAM {
                 if sensor.type == .libre1 {
                     blocks = 244

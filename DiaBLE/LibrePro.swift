@@ -92,6 +92,8 @@ class LibrePro: Sensor {
                 trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
             }
 
+            guard fram.count >= 176 + 24 * 8 else { return }
+
             // FRAM is updated with a 3 minutes delay:
             // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
 

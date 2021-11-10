@@ -199,9 +199,11 @@ class Gen2 {
             _ = Gen2.endSession(context: context)
             return result.error != nil ? result.error!.rawValue : Gen2Error.GEN2_ERROR_PROCESS_ERROR.rawValue
         }
-        output[0 ..< 6] = Data(verifyOutput.prefix(6))
+        // join the 7 bytes of GET_PVALUES result.data and the last 3 bytes of 9 of verifyOutput
         authenticationData[0 ..< result.data!.count] = result.data!
         authenticationData[result.data!.count ..< result.data!.count + 3] = verifyOutput[6 ... 8]
+        // copy the first 6 bytes of 9 of verifyOutput in the second array `output` passed by reference
+        output[0 ..< 6] = Data(verifyOutput.prefix(6))
         return 0
     }
 

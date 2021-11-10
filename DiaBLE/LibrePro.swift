@@ -70,43 +70,45 @@ class LibrePro: Sensor {
 
             log("DEBUG: Libre Pro: trend index: \(trendIndex), history index: \(historyIndex), started on: \(startDate.shortDateTime)")
 
-            // MARK: - continue adaptation from pasted Sensor base
 
-            //            for i in 0 ... 15 {
-            //                var j = trendIndex - 1 - i
-            //                if j < 0 { j += 16 }
-            //                let offset = 28 + j * 6         // body[4 ..< 100]
-            //                let rawValue = readBits(fram, offset, 0, 0xe)
-            //                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff
-            //                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
-            //                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
-            //                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
-            //                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
-            //                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
-            //                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
-            //                let id = age - i
-            //                let date = startDate + Double(age - i) * 60
-            //                trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
-            //            }
-            //
-            //            // FRAM is updated with a 3 minutes delay:
-            //            // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
-            //
-            //            let preciseHistoryIndex = ((age - 3) / 15 ) % 32
-            //            let delay = (age - 3) % 15 + 3
-            //            var readingDate = lastReadingDate
-            //            if preciseHistoryIndex == historyIndex {
-            //                readingDate.addTimeInterval(60.0 * -Double(delay))
-            //            } else {
-            //                readingDate.addTimeInterval(60.0 * -Double(delay - 15))
-            //            }
-            //
+            // MARK: - continue C&P review from the Sensor base class
+
+
+            for i in 0 ... 15 {
+                var j = trendIndex - 1 - i
+                if j < 0 { j += 16 }
+                let offset = 80 + j * 6                              // body[8 ..< 104]
+                let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF // TODO: test the 13-bit mask
+                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
+                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
+                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
+                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
+                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
+                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
+                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
+                let id = age - i
+                let date = startDate + Double(age - i) * 60
+                trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
+            }
+
+            // FRAM is updated with a 3 minutes delay:
+            // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
+
+            let preciseHistoryIndex = ((age - 3) / 15 ) % 32
+            let delay = (age - 3) % 15 + 3
+            var readingDate = lastReadingDate
+            if preciseHistoryIndex == historyIndex {
+                readingDate.addTimeInterval(60.0 * -Double(delay))
+            } else {
+                readingDate.addTimeInterval(60.0 * -Double(delay - 15))
+            }
+
             //            for i in 0 ... 31 {
             //                var j = historyIndex - 1 - i
             //                if j < 0 { j += 32 }
             //                let offset = 124 + j * 6    // body[100 ..< 292]
             //                let rawValue = readBits(fram, offset, 0, 0xe)
-            //                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff
+            //                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
             //                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
             //                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
             //                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
@@ -262,6 +264,7 @@ class LibrePro: Sensor {
         sensor.fram = Data(header.bytes + footer.bytes + body.bytes)
         sensor.lastReadingDate = Date()
         sensor.detailFRAM()
+        main.log("TEST: Libre Pro: trend: \(sensor.trend.map(\.value))\n\(sensor.trend)")
 
     }
 

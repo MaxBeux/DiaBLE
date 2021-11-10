@@ -25,12 +25,14 @@ The project started as a single script for the iPad Swift Playgrounds to test th
 
 I am targeting only the latest betas of Xcode and iOS. The new `async / await` and *actors* introduced in Swift 5.5 and iOS 15 probably would require a total rewrite of DiaBLE's foundations, as well as the enhanced *Gen2* protocols adopted by the recent Libre 2 Sense/US/CA/AU which haven't been reversed yet.
 
-**Please refer to the [TODOs](https://github.com/gui-dos/DiaBLE/blob/master/TODO.md) list for the up-to-date status of all the current limitations and known bugs of this prototype. [Discussions](https://github.com/gui-dos/DiaBLE/discussions) are open.**
+Please refer to the [**TODOs**](https://github.com/gui-dos/DiaBLE/blob/master/TODO.md) list for the up-to-date status of all the current limitations and known bugs of this **prototype**. [**Discussions**](https://github.com/gui-dos/DiaBLE/discussions) are open.
 
 ***Note***: the exploitation which allows to reset and reactivate a Libre 1 is well known to the Vendor and was unveiled already during [BlackAlps 2019](https://www.youtube.com/watch?v=Y9vtGmxh1IQ) and in [PoC||GTFO 0x20](https://archive.org/stream/pocorgtfo20#page/n6/mode/1up).
 
 ---
 ***Credits***: [@bubbledevteam](https://github.com/bubbledevteam), [@captainbeeheart](https://github.com/captainbeeheart), [@cryptax](https://github.com/cryptax), [@dabear](https://github.com/dabear), [@ivalkou](https://github.com/ivalkou), [@keencave](https://github.com/keencave), [LibreMonitor](https://github.com/UPetersen/LibreMonitor/tree/Swift4), [Loop](https://github.com/LoopKit/Loop), [Marek Macner](https://github.com/MarekM60), [Nightguard]( https://github.com/nightscout/nightguard), [@travisgoodspeed](https://github.com/travisgoodspeed), [WoofWoof](https://github.com/gshaviv/ninety-two), [xDrip+](https://github.com/NightscoutFoundation/xDrip), [xDrip4iO5](https://github.com/JohanDegraeve/xdripswift).
+
+***Special thanks to***: [Ambrosia](https://www.ambrosiasys.com), [@JtxGit](https://github.com/JtxGit), [@monder](https://github.com/monder), [Vic Wu](https://github.com/birdfly).
 
 ###### ***Disclaimer: the decrypting keys I am publishing are not related to user accounts and can be dumped from the sensor memory by using DiaBLE itself. The online servers I am using probably are tracking your personal data but all the traffic sent/received by DiaBLE is clearly shown in its logs. The reversed code I am pasting has been retrieved from other GitHub repos or reproduced simply by using open-source tools like `jadx-gui`.***
 

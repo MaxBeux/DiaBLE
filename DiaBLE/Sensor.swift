@@ -282,7 +282,7 @@ class Sensor: ObservableObject, Logging {
                 if j < 0 { j += 16 }
                 let offset = 28 + j * 6         // body[4 ..< 100]
                 let rawValue = readBits(fram, offset, 0, 0xe)
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff
+                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
                 let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
                 let hasError = readBits(fram, offset, 0x19, 0x1) != 0
                 let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
@@ -311,7 +311,7 @@ class Sensor: ObservableObject, Logging {
                 if j < 0 { j += 32 }
                 let offset = 124 + j * 6    // body[100 ..< 292]
                 let rawValue = readBits(fram, offset, 0, 0xe)
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1ff
+                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
                 let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
                 let hasError = readBits(fram, offset, 0x19, 0x1) != 0
                 let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
@@ -354,7 +354,7 @@ class Sensor: ObservableObject, Logging {
     @Published var streamingUnlockCount: UInt16 = 0
 
     // Gen2
-    var streamingAuthenticationData: Data = Data()    // 10 bytes built by verifyEnableStreamingResponse()
+    var streamingAuthenticationData: Data = Data(count: 10)    // formed when passed as third inout argument to verifyEnableStreamingResponse()
 
 
     init(transmitter: Transmitter? = nil, main: MainDelegate? = nil) {

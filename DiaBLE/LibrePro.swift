@@ -130,35 +130,22 @@ class LibrePro: Sensor {
             DispatchQueue.main.async {
                 self.main?.settings.activeSensorMaxLife = self.maxLife
             }
-            //
-            //            let i1 = readBits(fram, 2, 0, 3)
-            //            let i2 = readBits(fram, 2, 3, 0xa)
-            //            let i3 = readBits(fram, 0x150, 0, 8)    // footer[-8]
-            //            let i4 = readBits(fram, 0x150, 8, 0xe)
-            //            let negativei3 = readBits(fram, 0x150, 0x21, 1) != 0
-            //            let i5 = readBits(fram, 0x150, 0x28, 0xc) << 2
-            //            let i6 = readBits(fram, 0x150, 0x34, 0xc) << 2
-            //
-            //            calibrationInfo = CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
-            //            DispatchQueue.main.async {
-            //                self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
-            //            }
+
+            let b = 14 + 42                                // footer[16]
+            let i1 = readBits(fram, 26, 0, 3)
+            let i2 = readBits(fram, 26, 3, 0xa)
+            let i3 = readBits(fram, b, 0, 8)
+            let i4 = readBits(fram, b, 8, 0xe)
+            let negativei3 = readBits(fram, b, 0x21, 1) != 0
+            let i5 = readBits(fram, b, 0x28, 0xc) << 2
+            let i6 = readBits(fram, b, 0x34, 0xc) << 2
+
+            calibrationInfo = CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
+            DispatchQueue.main.async {
+                self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
+            }
 
         }
-    }
-
-
-    static func calibrationInfo(fram: Data) -> CalibrationInfo {
-        let b = 14 + 42
-        let i1 = readBits(fram, 26, 0, 3)
-        let i2 = readBits(fram, 26, 3, 0xa)
-        let i3 = readBits(fram, b, 0, 8)
-        let i4 = readBits(fram, b, 8, 0xe)
-        let negativei3 = readBits(fram, b, 0x21, 1) != 0
-        let i5 = readBits(fram, b, 0x28, 0xc) << 2
-        let i6 = readBits(fram, b, 0x34, 0xc) << 2
-
-        return CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
     }
 
 
@@ -261,8 +248,8 @@ class LibrePro: Sensor {
         #15  DC 00 A9 43 AF E4 DC 00  ...C....
         """
 
-        sensor.fram = Data(header.bytes + footer.bytes + body.bytes)
         sensor.lastReadingDate = Date()
+        sensor.fram = Data(header.bytes + footer.bytes + body.bytes)
         sensor.detailFRAM()
         main.log("TEST: Libre Pro: trend: \(sensor.trend.map(\.value))\n\(sensor.trend)")
 

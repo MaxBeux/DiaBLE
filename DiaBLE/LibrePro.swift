@@ -225,4 +225,44 @@ class LibrePro: Sensor {
         }
     }
 
+
+    // https://github.com/gui-dos/DiaBLE/discussions/2
+
+    static func test(main: MainDelegate) {
+        let sensor = LibrePro(main: main)
+        let header = """
+        #00  D3 40 00 00 03 00 00 00  .@......
+        #01  00 00 00 00 00 00 00 00  ........
+        #02  00 00 00 00 00 00 00 00  ........
+        #03  4A 46 47 55 32 36 39 2D  JFGU269-
+        #04  54 30 33 31 31 47 04 0E  T0311G..
+        """
+        let footer = """
+        #05  C7 DD 10 00 F0 0B C0 4E  .......N
+        #06  14 03 96 80 5A 00 ED A6  ....Z...
+        #07  0E 6E 5A AF 04 4D 5A 63  .nZ..MZc
+        #08  3A 03 CB 1B 00 00 00 00  :.......
+        """
+        let body = """
+        #09  6E 6F E6 14 05 00 64 01  no....d.
+        #0a  77 43 AF FC DC 00 80 43  wC.....C
+        #0b  AF 10 DD 00 6D 43 AF 00  ....mC..
+        #0c  DD 00 9F 43 AF 20 DD 00  ...C. ..
+        #0d  79 43 AF 5C DD 00 7A 43  yC.\\..zC
+        #0e  AF CC DC 00 55 43 AF D0  ....UC..
+        #0f  DC 00 8B 43 AF D8 DC 00  ...C....
+        #10  84 43 AF DC DC 00 85 43  .C.....C
+        #11  AF F4 DC 00 84 43 AF E4  .....C..
+        #12  DC 00 58 43 AF DC DC 00  ..XC....
+        #13  85 43 AF E0 DC 00 7F 43  .C.....C
+        #14  AF E4 DC 00 76 43 AF E8  ....vC..
+        #15  DC 00 A9 43 AF E4 DC 00  ...C....
+        """
+
+        sensor.fram = Data(header.bytes + footer.bytes + body.bytes)
+        sensor.lastReadingDate = Date()
+        sensor.detailFRAM()
+
+    }
+
 }

@@ -320,7 +320,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 sensor.securityGeneration = 3 // TODO
             }
             log("NFC: IC manufacturer code: 0x\(manufacturer)")
-            log("NFC: IC serial number: \(tag.icSerialNumber.hex)")
+            debugLog("NFC: IC serial number: \(tag.icSerialNumber.hex)")
 
             var firmware = "RF430"
             switch tag.identifier[2] {
@@ -331,12 +331,12 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
             }
             log("NFC: \(firmware)firmware")
 
-            log(String(format: "NFC: IC reference: 0x%X", systemInfo.icReference))
+            debugLog(String(format: "NFC: IC reference: 0x%X", systemInfo.icReference))
             if systemInfo.applicationFamilyIdentifier != -1 {
-                log(String(format: "NFC: application family id (AFI): %d", systemInfo.applicationFamilyIdentifier))
+                debugLog(String(format: "NFC: application family id (AFI): %d", systemInfo.applicationFamilyIdentifier))
             }
             if systemInfo.dataStorageFormatIdentifier != -1 {
-                log(String(format: "NFC: data storage format id: %d", systemInfo.dataStorageFormatIdentifier))
+                debugLog(String(format: "NFC: data storage format id: %d", systemInfo.dataStorageFormatIdentifier))
             }
 
             log(String(format: "NFC: memory size: %d blocks", systemInfo.totalBlocks))
@@ -348,6 +348,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
             if sensor.patchInfo.count > 0 {
                 log("NFC: patch info: \(sensor.patchInfo.hex)")
                 log("NFC: sensor type: \(sensor.type.rawValue)\(sensor.patchInfo.hex.hasPrefix("a2") ? " (new 'A2' kind)" : "")")
+                log("NFC: sensor security generation [0-3]: \(sensor.securityGeneration)")
 
                 DispatchQueue.main.async {
                     self.main.settings.patchUid = self.sensor.uid

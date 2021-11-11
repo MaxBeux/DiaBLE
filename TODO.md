@@ -17,6 +17,8 @@ TODO
 ----
 
 * Apple Watch app: snapshots, workout and extended runtime background sessions, complications
+* Scrollable graph, offline trend arrow, landcape mode
+* Smoothing the historic values and projecting the trend ones
 * Come back to an iPad Swift Playgrounds 4 app (no NFC)
 * log: limit to a number of readings, prepend time, Share menu, record to a file, add Logger support
 * profile and avoid retain cycles

@@ -22,7 +22,7 @@ TODO
 * Come back to an iPad Swift Playgrounds 4 app (no NFC)
 * log: limit to a number of readings, prepend time, Share menu, record to a file, add Logger support
 * profile and avoid retain cycles
-* make use of Actors, Combine, Dependency Injection, TabularData
+* make use of Actors, Combine, Dependency Injection, TabularData, ...
 
 
 PLANS / WISHES

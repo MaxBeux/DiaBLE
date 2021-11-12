@@ -552,7 +552,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
     func readBlocks(from start: Int, count blocks: Int, requesting: Int = 3) async throws -> (Int, Data) {
 
-        if sensor.securityGeneration < 1 {
+        if sensor.securityGeneration < 1 && sensor.type != .libreProH {
             debugLog("readBlocks() B3 command not supported by \(sensor.type)")
             throw NFCError.commandNotSupported
         }

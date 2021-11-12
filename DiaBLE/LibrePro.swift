@@ -25,7 +25,8 @@ import Foundation
 // body[6...7]:   history index
 // body[8...103]: 16 6-byte trend values
 //
-// The following blocks storing 14 days of historic data (≈ 8 KB) are also readable by B0/B3.
+// The following blocks storing 14 days of historic data (≈ 8 KB) are to be read by
+// using B0/B3 when their index > 255
 //
 // If history index < 32 then read starting from the 22nd block
 // else read starting again from the 22nd block: (((index - 32) * 6) + 22 * 8) / 8
@@ -44,8 +45,7 @@ class LibrePro: Sensor {
 
     // TODO: adapt pasted code from Sensor base class
 
-    override var fram: Data {
-        didSet {
+    override func parseFRAM() {
             encryptedFram = Data()
 
             updateCRCReport()
@@ -94,7 +94,6 @@ class LibrePro: Sensor {
                 trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
             }
 
-            guard fram.count >= 176 + 24 * 8 else { return }
 
             // FRAM is updated with a 3 minutes delay:
             // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
@@ -113,16 +112,16 @@ class LibrePro: Sensor {
 
             for i in 0 ... 31 {
 
-                //                var j = historyIndex - 1 - i
-                //                if j < 0 { j += 32 }
-
                 let j = historyIndex - 1 - i
-                let offset = 176 + j * 6
+                var offset = 176 + j * 6
 
                 // TODO: on a real Libre Pro scan the 32 historic measurements by using B3
 
-                if fram.count < 176 + (j + 1) * 6 {
-                    break
+                if fram.count < offset + 6 {
+                    // test the first history blocks which were scanned anyway
+                    let scanned = (fram.count - 176) / 6
+                    offset = 176 + (scanned - 1 - i) * 6
+                    if offset < 176 { continue }
                 }
 
                 // TODO: test the 13-bit mask; use a 8.5 conversion factor?
@@ -163,8 +162,6 @@ class LibrePro: Sensor {
             DispatchQueue.main.async {
                 self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
             }
-
-        }
     }
 
 
@@ -237,7 +234,10 @@ class LibrePro: Sensor {
     // https://github.com/gui-dos/DiaBLE/discussions/2
 
     static func test(main: MainDelegate) {
+
         let sensor = LibrePro(main: main)
+        sensor.lastReadingDate = Date()
+
         let header = """
         #00  D3 40 00 00 03 00 00 00  .@......
         #01  00 00 00 00 00 00 00 00  ........
@@ -266,9 +266,31 @@ class LibrePro: Sensor {
         #14  AF E4 DC 00 76 43 AF E8  ....vC..
         #15  DC 00 A9 43 AF E4 DC 00  ...C....
         """
+        let history = """
+        #16  7D 83 80 B6 97 01 C0 43  }......C
+        #17  AF F4 D6 01 BE 43 AF 80  .....C..
+        #18  D6 01 CC 43 AF 30 D6 01  ...C.0..
+        #19  4A 43 AF 08 D6 01 D7 40  JC.....@
+        #1a  AF F4 D5 01 20 42 AF 20  .... B.
+        #1b  D6 01 70 42 AF E4 D5 01  ..pB....
+        #1c  34 43 AF E8 15 02 B3 43  4C.....C
+        #1d  AF CC D5 01 44 43 AF F0  ....DC..
+        #1e  D5 01 52 43 AF FC D5 01  ..RC....
+        #1f  A7 43 AF EC 15 02 A8 43  .C.....C
+        #20  AF BC 15 02 CE 43 AF AC  .....C..
+        #21  15 02 B8 43 AF B4 15 02  ...C....
+        #22  49 42 AF 8C D6 01 8B 41  IB.....A
+        #23  AF 64 D6 01 E1 40 AF 30  .d...@.0
+        #24  D6 01 62 41 AF 20 D6 01  ..bA. ..
+        #25  5D 41 AF 00 D6 01 BE 42  ]A.....B
+        #26  AF DC 15 02 E5 42 AF F4  .....B..
+        #27  D5 01 DF 42 AF 28 D6 01  ...B.(..
+        #28  55 43 AF 2C D6 01 A0 42  UC.,...B
+        #29  AF 28 D6 01 45 43 AF 3C  .(..EC.<
+        #2a  D6 01 33 43 AF 34 D6 01  ..3C.4..
+        """
 
-        sensor.lastReadingDate = Date()
-        sensor.fram = Data(header.bytes + footer.bytes + body.bytes)
+        sensor.fram = Data(header.bytes + footer.bytes + body.bytes + history.bytes)
         sensor.detailFRAM()
         main.log("TEST: Libre Pro: trend: \(sensor.trend.map(\.value))\n\(sensor.trend)")
         main.log("TEST: Libre Pro: history: \(sensor.history.map(\.value))\n\(sensor.history)")

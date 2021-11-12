@@ -241,112 +241,12 @@ class Sensor: ObservableObject, Logging {
     var factoryTrend: [Glucose] { trend.map { factoryGlucose(rawGlucose: $0, calibrationInfo: calibrationInfo) }}
     var factoryHistory: [Glucose] { history.map { factoryGlucose(rawGlucose: $0, calibrationInfo: calibrationInfo) }}
 
-    var encryptedFram: Data = Data()
-
     var fram: Data = Data() {
         didSet {
-            encryptedFram = Data()
-            if (type == .libre2 || type == .libreUS14day) && UInt16(fram[0...1]) != crc16(fram[2...23]) {
-                encryptedFram = fram
-                if fram.count >= 344 {
-                    if let decryptedFRAM = try? Libre2.decryptFRAM(type: type, id: uid, info: patchInfo, data: fram) {
-                        fram = decryptedFRAM
-                    }
-                }
-            }
-            updateCRCReport()
-            guard !crcReport.contains("FAILED") else {
-                state = .unknown
-                return
-            }
-
-            if fram.count < 344 && encryptedFram.count > 0 { return }
-
-            if let sensorState = SensorState(rawValue: fram[4]) {
-                state = sensorState
-            }
-
-            guard fram.count >= 320 else { return }
-
-            age = Int(fram[316]) + Int(fram[317]) << 8    // body[-4]
-            let startDate = lastReadingDate - Double(age) * 60
-            initializations = Int(fram[318])
-
-            trend = []
-            history = []
-            let trendIndex = Int(fram[26])      // body[2]
-            let historyIndex = Int(fram[27])    // body[3]
-
-            for i in 0 ... 15 {
-                var j = trendIndex - 1 - i
-                if j < 0 { j += 16 }
-                let offset = 28 + j * 6         // body[4 ..< 100]
-                let rawValue = readBits(fram, offset, 0, 0xe)
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
-                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
-                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
-                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
-                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
-                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
-                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
-                let id = age - i
-                let date = startDate + Double(age - i) * 60
-                trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
-            }
-
-            // FRAM is updated with a 3 minutes delay:
-            // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
-
-            let preciseHistoryIndex = ((age - 3) / 15 ) % 32
-            let delay = (age - 3) % 15 + 3
-            var readingDate = lastReadingDate
-            if preciseHistoryIndex == historyIndex {
-                readingDate.addTimeInterval(60.0 * -Double(delay))
-            } else {
-                readingDate.addTimeInterval(60.0 * -Double(delay - 15))
-            }
-
-            for i in 0 ... 31 {
-                var j = historyIndex - 1 - i
-                if j < 0 { j += 32 }
-                let offset = 124 + j * 6    // body[100 ..< 292]
-                let rawValue = readBits(fram, offset, 0, 0xe)
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
-                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
-                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
-                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
-                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
-                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
-                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
-                let id = age - delay - i * 15
-                let date = id > -1 ? readingDate - Double(i) * 15 * 60 : startDate
-                history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
-            }
-
-            guard fram.count >= 344 else { return }
-
-            // fram[322...323] (footer[2..3]) corresponds to patchInfo[2...3]
-            region = Int(fram[323])
-            maxLife = Int(fram[326]) + Int(fram[327]) << 8
-            DispatchQueue.main.async {
-                self.main?.settings.activeSensorMaxLife = self.maxLife
-            }
-
-            let i1 = readBits(fram, 2, 0, 3)
-            let i2 = readBits(fram, 2, 3, 0xa)
-            let i3 = readBits(fram, 0x150, 0, 8)    // footer[-8]
-            let i4 = readBits(fram, 0x150, 8, 0xe)
-            let negativei3 = readBits(fram, 0x150, 0x21, 1) != 0
-            let i5 = readBits(fram, 0x150, 0x28, 0xc) << 2
-            let i6 = readBits(fram, 0x150, 0x34, 0xc) << 2
-
-            calibrationInfo = CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
-            DispatchQueue.main.async {
-                self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
-            }
-
+            parseFRAM()
         }
     }
+    var encryptedFram: Data = Data()
 
     // Libre 2 and BLE streaming parameters
     @Published var initialPatchInfo: PatchInfo = Data()
@@ -364,6 +264,110 @@ class Sensor: ObservableObject, Logging {
         } else {
             self.main = main
         }
+    }
+
+
+    func parseFRAM() {
+        encryptedFram = Data()
+        if (type == .libre2 || type == .libreUS14day) && UInt16(fram[0...1]) != crc16(fram[2...23]) {
+            encryptedFram = fram
+            if fram.count >= 344 {
+                if let decryptedFRAM = try? Libre2.decryptFRAM(type: type, id: uid, info: patchInfo, data: fram) {
+                    fram = decryptedFRAM
+                }
+            }
+        }
+        updateCRCReport()
+        guard !crcReport.contains("FAILED") else {
+            state = .unknown
+            return
+        }
+
+        if fram.count < 344 && encryptedFram.count > 0 { return }
+
+        if let sensorState = SensorState(rawValue: fram[4]) {
+            state = sensorState
+        }
+
+        guard fram.count >= 320 else { return }
+
+        age = Int(fram[316]) + Int(fram[317]) << 8    // body[-4]
+        let startDate = lastReadingDate - Double(age) * 60
+        initializations = Int(fram[318])
+
+        trend = []
+        history = []
+        let trendIndex = Int(fram[26])      // body[2]
+        let historyIndex = Int(fram[27])    // body[3]
+
+        for i in 0 ... 15 {
+            var j = trendIndex - 1 - i
+            if j < 0 { j += 16 }
+            let offset = 28 + j * 6         // body[4 ..< 100]
+            let rawValue = readBits(fram, offset, 0, 0xe)
+            let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
+            let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
+            let hasError = readBits(fram, offset, 0x19, 0x1) != 0
+            let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
+            var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
+            let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
+            if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
+            let id = age - i
+            let date = startDate + Double(age - i) * 60
+            trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
+        }
+
+        // FRAM is updated with a 3 minutes delay:
+        // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
+
+        let preciseHistoryIndex = ((age - 3) / 15 ) % 32
+        let delay = (age - 3) % 15 + 3
+        var readingDate = lastReadingDate
+        if preciseHistoryIndex == historyIndex {
+            readingDate.addTimeInterval(60.0 * -Double(delay))
+        } else {
+            readingDate.addTimeInterval(60.0 * -Double(delay - 15))
+        }
+
+        for i in 0 ... 31 {
+            var j = historyIndex - 1 - i
+            if j < 0 { j += 32 }
+            let offset = 124 + j * 6    // body[100 ..< 292]
+            let rawValue = readBits(fram, offset, 0, 0xe)
+            let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
+            let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
+            let hasError = readBits(fram, offset, 0x19, 0x1) != 0
+            let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
+            var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
+            let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
+            if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
+            let id = age - delay - i * 15
+            let date = id > -1 ? readingDate - Double(i) * 15 * 60 : startDate
+            history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
+        }
+
+        guard fram.count >= 344 else { return }
+
+        // fram[322...323] (footer[2..3]) corresponds to patchInfo[2...3]
+        region = Int(fram[323])
+        maxLife = Int(fram[326]) + Int(fram[327]) << 8
+        DispatchQueue.main.async {
+            self.main?.settings.activeSensorMaxLife = self.maxLife
+        }
+
+        let i1 = readBits(fram, 2, 0, 3)
+        let i2 = readBits(fram, 2, 3, 0xa)
+        let i3 = readBits(fram, 0x150, 0, 8)    // footer[-8]
+        let i4 = readBits(fram, 0x150, 8, 0xe)
+        let negativei3 = readBits(fram, 0x150, 0x21, 1) != 0
+        let i5 = readBits(fram, 0x150, 0x28, 0xc) << 2
+        let i6 = readBits(fram, 0x150, 0x34, 0xc) << 2
+
+        calibrationInfo = CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
+        DispatchQueue.main.async {
+            self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
+        }
+
     }
 
 

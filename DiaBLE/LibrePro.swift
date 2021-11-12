@@ -46,122 +46,122 @@ class LibrePro: Sensor {
     // TODO: adapt pasted code from Sensor base class
 
     override func parseFRAM() {
-            encryptedFram = Data()
+        encryptedFram = Data()
 
-            updateCRCReport()
-            guard !crcReport.contains("FAILED") else {
-                state = .unknown
-                return
+        updateCRCReport()
+        guard !crcReport.contains("FAILED") else {
+            state = .unknown
+            return
+        }
+
+        if let sensorState = SensorState(rawValue: fram[4]) {
+            state = sensorState
+        }
+
+        guard fram.count >= 176 else { return }
+
+        age = Int(fram[74]) + Int(fram[75]) << 8                 // body[2...3]
+        let startDate = lastReadingDate - Double(age) * 60
+
+        //            initializations = Int(fram[318])
+
+        trend = []
+        history = []
+        let trendIndex = Int(fram[76]) + Int(fram[77]) << 8      // body[4...5]
+        let historyIndex = Int(fram[78]) + Int(fram[79]) << 8    // body[6...7]
+
+        log("DEBUG: Libre Pro: trend index: \(trendIndex), history index: \(historyIndex), started on: \(startDate.shortDateTime)")
+
+
+        // MARK: - continue C&P review from the Sensor base class
+
+
+        for i in 0 ... 15 {
+            var j = trendIndex - 1 - i
+            if j < 0 { j += 16 }
+            let offset = 80 + j * 6                              // body[8 ..< 104]
+            // TODO: test the 13-bit mask; use a 8.5 conversion factor?
+            let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
+            let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
+            let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
+            let hasError = readBits(fram, offset, 0x19, 0x1) != 0
+            let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
+            var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
+            let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
+            if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
+            let id = age - i
+            let date = startDate + Double(age - i) * 60
+            trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
+        }
+
+
+        // FRAM is updated with a 3 minutes delay:
+        // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
+
+        let preciseHistoryIndex = ((age - 3) / 15 ) % 32
+        let delay = (age - 3) % 15 + 3
+        var readingDate = lastReadingDate
+        if preciseHistoryIndex == historyIndex {
+            readingDate.addTimeInterval(60.0 * -Double(delay))
+        } else {
+            readingDate.addTimeInterval(60.0 * -Double(delay - 15))
+        }
+
+        // TODO: test whether when history index > 32 we should start again from the 22nd block:
+        // (((index - 32) * 6) + 22 * 8) / 8
+
+        for i in 0 ... 31 {
+
+            let j = historyIndex - 1 - i
+            var offset = 176 + j * 6
+
+            // TODO: on a real Libre Pro scan the 32 historic measurements by using B3
+
+            if fram.count < offset + 6 {
+                // test the first history blocks which were scanned anyway
+                let scanned = (fram.count - 176) / 6
+                offset = 176 + (scanned - 1 - i) * 6
+                if offset < 176 { continue }
             }
 
-            if let sensorState = SensorState(rawValue: fram[4]) {
-                state = sensorState
-            }
-
-            guard fram.count >= 176 else { return }
-
-            age = Int(fram[74]) + Int(fram[75]) << 8                 // body[2...3]
-            let startDate = lastReadingDate - Double(age) * 60
-
-            //            initializations = Int(fram[318])
-
-            trend = []
-            history = []
-            let trendIndex = Int(fram[76]) + Int(fram[77]) << 8      // body[4...5]
-            let historyIndex = Int(fram[78]) + Int(fram[79]) << 8    // body[6...7]
-
-            log("DEBUG: Libre Pro: trend index: \(trendIndex), history index: \(historyIndex), started on: \(startDate.shortDateTime)")
+            // TODO: test the 13-bit mask; use a 8.5 conversion factor?
+            let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
+            let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
+            let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
+            let hasError = readBits(fram, offset, 0x19, 0x1) != 0
+            let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
+            var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
+            let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
+            if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
+            let id = age - delay - i * 15
+            let date = id > -1 ? readingDate - Double(i) * 15 * 60 : startDate
+            history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
+        }
 
 
-            // MARK: - continue C&P review from the Sensor base class
+        // Libre Pro: fram[42...43] (footer[2..3]) corresponds to patchInfo[2...3]
 
+        // TODO: with a Libre Pro footer[2...3] = 1000 family = 1 but region = 00 ???
+        region = Int(fram[43])
 
-            for i in 0 ... 15 {
-                var j = trendIndex - 1 - i
-                if j < 0 { j += 16 }
-                let offset = 80 + j * 6                              // body[8 ..< 104]
-                // TODO: test the 13-bit mask; use a 8.5 conversion factor?
-                let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
-                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
-                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
-                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
-                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
-                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
-                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
-                let id = age - i
-                let date = startDate + Double(age - i) * 60
-                trend.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
-            }
+        maxLife = Int(fram[46]) + Int(fram[47]) << 8   // footer[6...7]
+        DispatchQueue.main.async {
+            self.main?.settings.activeSensorMaxLife = self.maxLife
+        }
 
+        let b = 14 + 42                                // footer[16]
+        let i1 = readBits(fram, 26, 0, 3)
+        let i2 = readBits(fram, 26, 3, 0xa)
+        let i3 = readBits(fram, b, 0, 8)
+        let i4 = readBits(fram, b, 8, 0xe)
+        let negativei3 = readBits(fram, b, 0x21, 1) != 0
+        let i5 = readBits(fram, b, 0x28, 0xc) << 2
+        let i6 = readBits(fram, b, 0x34, 0xc) << 2
 
-            // FRAM is updated with a 3 minutes delay:
-            // https://github.com/UPetersen/LibreMonitor/blob/Swift4/LibreMonitor/Model/SensorData.swift
-
-            let preciseHistoryIndex = ((age - 3) / 15 ) % 32
-            let delay = (age - 3) % 15 + 3
-            var readingDate = lastReadingDate
-            if preciseHistoryIndex == historyIndex {
-                readingDate.addTimeInterval(60.0 * -Double(delay))
-            } else {
-                readingDate.addTimeInterval(60.0 * -Double(delay - 15))
-            }
-
-            // TODO: test whether when history index > 32 we should start again from the 22nd block:
-            // (((index - 32) * 6) + 22 * 8) / 8
-
-            for i in 0 ... 31 {
-
-                let j = historyIndex - 1 - i
-                var offset = 176 + j * 6
-
-                // TODO: on a real Libre Pro scan the 32 historic measurements by using B3
-
-                if fram.count < offset + 6 {
-                    // test the first history blocks which were scanned anyway
-                    let scanned = (fram.count - 176) / 6
-                    offset = 176 + (scanned - 1 - i) * 6
-                    if offset < 176 { continue }
-                }
-
-                // TODO: test the 13-bit mask; use a 8.5 conversion factor?
-                let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
-                let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF
-                let qualityFlags = (readBits(fram, offset, 0xe, 0xb) & 0x600) >> 9
-                let hasError = readBits(fram, offset, 0x19, 0x1) != 0
-                let rawTemperature = readBits(fram, offset, 0x1a, 0xc) << 2
-                var temperatureAdjustment = readBits(fram, offset, 0x26, 0x9) << 2
-                let negativeAdjustment = readBits(fram, offset, 0x2f, 0x1)
-                if negativeAdjustment != 0 { temperatureAdjustment = -temperatureAdjustment }
-                let id = age - delay - i * 15
-                let date = id > -1 ? readingDate - Double(i) * 15 * 60 : startDate
-                history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
-            }
-
-
-            // Libre Pro: fram[42...43] (footer[2..3]) corresponds to patchInfo[2...3]
-
-            // TODO: with a Libre Pro footer[2...3] = 1000 family = 1 but region = 00 ???
-            region = Int(fram[43])
-
-            maxLife = Int(fram[46]) + Int(fram[47]) << 8   // footer[6...7]
-            DispatchQueue.main.async {
-                self.main?.settings.activeSensorMaxLife = self.maxLife
-            }
-
-            let b = 14 + 42                                // footer[16]
-            let i1 = readBits(fram, 26, 0, 3)
-            let i2 = readBits(fram, 26, 3, 0xa)
-            let i3 = readBits(fram, b, 0, 8)
-            let i4 = readBits(fram, b, 8, 0xe)
-            let negativei3 = readBits(fram, b, 0x21, 1) != 0
-            let i5 = readBits(fram, b, 0x28, 0xc) << 2
-            let i6 = readBits(fram, b, 0x34, 0xc) << 2
-
-            calibrationInfo = CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
-            DispatchQueue.main.async {
-                self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
-            }
+        calibrationInfo = CalibrationInfo(i1: i1, i2: i2, i3: negativei3 ? -i3 : i3, i4: i4, i5: i5, i6: i6)
+        DispatchQueue.main.async {
+            self.main?.settings.activeSensorCalibrationInfo = self.calibrationInfo
+        }
     }
 
 

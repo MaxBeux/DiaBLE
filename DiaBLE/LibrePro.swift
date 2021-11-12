@@ -112,9 +112,19 @@ class LibrePro: Sensor {
             // (((index - 32) * 6) + 22 * 8) / 8
 
             for i in 0 ... 31 {
-                var j = historyIndex - 1 - i
-                if j < 0 { j += 32 }
+
+                //                var j = historyIndex - 1 - i
+                //                if j < 0 { j += 32 }
+
+                let j = historyIndex - 1 - i
                 let offset = 176 + j * 6
+
+                // TODO: on a real Libre Pro scan the 32 historic measurements by using B3
+
+                if fram.count < 176 + (j + 1) * 6 {
+                    break
+                }
+
                 // TODO: test the 13-bit mask; use a 8.5 conversion factor?
                 let rawValue = readBits(fram, offset, 0, 0xe) & 0x1FFF
                 let quality = UInt16(readBits(fram, offset, 0xe, 0xb)) & 0x1FF

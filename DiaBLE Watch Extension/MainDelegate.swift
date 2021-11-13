@@ -66,7 +66,6 @@ public class MainDelegate: NSObject, WKExtendedRuntimeSessionDelegate {
         //        UNUserNotificationCenter.current().delegate = self
         //        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
 
-
         let numberFormatter = NumberFormatter()
         numberFormatter.minimumFractionDigits = 8
         settings.numberFormatter = numberFormatter

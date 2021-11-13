@@ -40,6 +40,44 @@ import Foundation
 
 class LibrePro: Sensor {
 
+#if !os(watchOS)
+
+    override func execute(nfc: NFC, taskRequest: TaskRequest) async throws {
+
+        switch taskRequest {
+
+        case .readFRAM:
+
+            // nfc.sensor = LibrePro.test(main: main)  // TEST
+            let historyIndex = Int(fram[78]) + Int(fram[79]) << 8
+            let startIndex = max(((historyIndex - 1) * 6) / 8 - 31, 0)
+            let offset = (8 - ((historyIndex - 1) * 6) % 8) % 8
+            let blockCount = min(((historyIndex - 1) * 6) / 8, offset == 0 ? 24 : 25)
+
+            // var blockCount = min(((historyIndex - 1) * 6) / 8, offset == 0 ? 24 : 25) // TEST
+            print("DEBUG: original historyIndex: \(historyIndex), startIndex: \(startIndex), offset: \(offset), blockCount: \(blockCount), start: \(22 + startIndex ), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
+            // let start = 22 + min(startIndex, data.count / 8 - 22)     // TEST
+            // let historyData = Data(data[176...].prefix(46 * 8))       // TEST
+            // blockCount = min(blockCount, (data.count - 176) / 8 - 8)  // TEST
+            // print("DEBUG: TEST data: \(data), historyIndex: \(historyIndex), startIndex: \(startIndex), offset: \(offset), blockCount: \(blockCount), start: \(start), historyData: \(historyData), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
+
+            let (start, historyData) = try await nfc.readBlocks(from: 22 + startIndex, count: blockCount)
+            log(historyData.hexDump(header: "NFC: did read \(historyData.count / 8) FRAM blocks:", startingBlock: start))
+            let measurements = (blockCount * 8) / 6
+            let history = Data(historyData[offset..<(offset + measurements * 6)])
+            log(history.hexDump(header: "Libre Pro: \(measurements) 6-byte measurements:", startingBlock: historyIndex))
+
+        default:
+            break
+
+        }
+    }
+
+#endif    // #if !os(watchOS)
+
+
+    // TODO: convert history blocks to Libre 1 layout
+
     override func parseFRAM() {
         updateCRCReport()
         guard !crcReport.contains("FAILED") else {
@@ -155,7 +193,8 @@ class LibrePro: Sensor {
 
 
     override func detailFRAM() {
-        log("\(fram.hexDump(header: "Sensor FRAM:", startingBlock: 0))")
+        log("\(fram.prefix(46 * 8).hexDump(header: "Sensor FRAM:", startingBlock: 0))")
+        debugLog("\(fram.hexDump(header: "TEST: full sensor FRAM:", startingBlock: 0))")
         if crcReport.count > 0 {
             log(crcReport)
             if crcReport.contains("FAILED") {

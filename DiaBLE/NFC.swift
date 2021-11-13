@@ -448,17 +448,8 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 }
                 sensor.lastReadingDate = lastReadingDate
 
-                // TODO: test; convert history blocks to Libre 1 layout
                 if sensor.type == .libreProH {
-                    let historyIndex = Int(data[78]) + Int(data[79]) << 8
-                    let startIndex = max(((historyIndex - 1) * 6) / 8 - 31, 0)
-                    let offset = (8 - ((historyIndex - 1) * 6) % 8) % 8
-                    let blockCount = min(historyIndex - 1, offset == 0 ? 24 : 25)
-                    let (start, historyData) = try await readBlocks(from: 22 + startIndex, count: blockCount)
-                    log(historyData.hexDump(header: "NFC: did read \(historyData.count / 8) FRAM blocks:", startingBlock: start))
-                    let measurements = (blockCount * 8) / 6
-                    let history = Data(historyData[offset..<(offset + measurements * 6)])
-                    log(history.hexDump(header: "Libre Pro: \(measurements) 6-byte measurements:", startingBlock: historyIndex))
+                    try await sensor.execute(nfc: self, taskRequest: .readFRAM)
                 }
 
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)

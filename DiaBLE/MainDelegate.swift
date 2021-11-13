@@ -59,7 +59,6 @@ public class MainDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDele
         eventKit = EventKit(main: self)
         eventKit?.sync()
 
-
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
 

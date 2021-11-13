@@ -226,7 +226,8 @@ class Libre2: Sensor {
 
         }
     }
-#endif
+
+#endif    // #if !os(watchOS)
 
 
     static func prepareVariables2(id: SensorUid, i1: UInt16, i2: UInt16, i3: UInt16, i4: UInt16) -> [UInt16] {

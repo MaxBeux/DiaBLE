@@ -448,6 +448,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 }
                 sensor.lastReadingDate = lastReadingDate
 
+                // sensor = LibrePro.test(main: main)   // TEST
                 if sensor.type == .libreProH {
                     try await sensor.execute(nfc: self, taskRequest: .readFRAM)
                 }

@@ -28,9 +28,6 @@ import Foundation
 // The following blocks storing 14 days of historic data (≈ 8 KB) are to be read by
 // using B0/B3 when their index > 255
 //
-// If history index < 32 then read starting from the 22nd block
-// else read starting again from the 22nd block: (((index - 32) * 6) + 22 * 8) / 8
-//
 // blocks 0x0406 - 0x04DD: section ending with the patch table for the commands
 //                         A0 A1 A2 A4 A3 ?? E0 E1 E2
 //
@@ -101,9 +98,6 @@ class LibrePro: Sensor {
         } else {
             readingDate.addTimeInterval(60.0 * -Double(delay - 15))
         }
-
-        // TODO: test whether when history index > 32 we should start again from the 22nd block:
-        // (((index - 32) * 6) + 22 * 8) / 8
 
         for i in 0 ... 31 {
 
@@ -228,7 +222,7 @@ class LibrePro: Sensor {
 
     // https://github.com/gui-dos/DiaBLE/discussions/2
 
-    static func test(main: MainDelegate) {
+    static func test(main: MainDelegate) -> Sensor {
 
         let sensor = LibrePro(main: main)
         sensor.lastReadingDate = Date()
@@ -303,6 +297,8 @@ class LibrePro: Sensor {
         main.debugLog("TEST: Libre Pro: history: \(sensor.history)")
         main.history.rawTrend  = sensor.trend
         main.history.rawValues = sensor.history
+
+        return sensor
 
     }
 

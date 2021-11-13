@@ -401,9 +401,6 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
             }
 
-
-            // TODO: test whether the Libre Pro first 24 history blocks are always the most recent ones
-
             var blocks = sensor.type != .libreProH ? 43 : 22 + 24    // (32 * 6 / 8)
             if taskRequest == .readFRAM {
                 if sensor.type == .libre1 {
@@ -450,6 +447,18 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                     self.main.app.lastReadingDate = lastReadingDate
                 }
                 sensor.lastReadingDate = lastReadingDate
+
+                // TODO: test; convert history blocks to Libre 1 layout
+                if sensor.type == .libreProH {
+                    let historyIndex = Int(data[78]) + Int(data[79]) << 8
+                    let startIndex = ((historyIndex - 1) * 6) / 8
+                    let offset = (8 - ((historyIndex - 1) * 6) % 8) % 8
+                    let blockCount = min(historyIndex - 1, offset == 0 ? 24 : 25)
+                    let (start, historyData) = try await readBlocks(from: 22 + startIndex + offset, count: blockCount)
+                    log(historyData.hexDump(header: "NFC: did read \(historyData.count / 8) FRAM blocks:", startingBlock: start))
+                    let history = Data(historyData[(offset * 8)...(offset + blockCount * 8)])
+                    log(history.hexDump(header: "Libre Pro: 32 6-byte measuremets:", startingBlock: historyIndex))
+                }
 
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                 session.invalidate()

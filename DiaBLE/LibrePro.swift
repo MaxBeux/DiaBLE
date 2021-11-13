@@ -301,6 +301,7 @@ class LibrePro: Sensor {
             main.history.rawTrend  = sensor.trend
             main.history.rawValues = sensor.history
         }
+
         return sensor
 
     }

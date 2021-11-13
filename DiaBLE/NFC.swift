@@ -456,8 +456,8 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                     let blockCount = min(historyIndex - 1, offset == 0 ? 24 : 25)
                     let (start, historyData) = try await readBlocks(from: 22 + startIndex, count: blockCount)
                     log(historyData.hexDump(header: "NFC: did read \(historyData.count / 8) FRAM blocks:", startingBlock: start))
-                    let history = Data(historyData[(offset * 8)...(offset + blockCount * 8)])
-                    log(history.hexDump(header: "Libre Pro: 32 6-byte measuremets:", startingBlock: historyIndex))
+                    let history = Data(historyData[offset...(offset + blockCount * 8)])
+                    log(history.hexDump(header: "Libre Pro: 32 6-byte measurements:", startingBlock: historyIndex))
                 }
 
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)

@@ -451,7 +451,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 // TODO: test; convert history blocks to Libre 1 layout
                 if sensor.type == .libreProH {
                     let historyIndex = Int(data[78]) + Int(data[79]) << 8
-                    let startIndex = ((historyIndex - 1) * 6) / 8
+                    let startIndex = min(((historyIndex - 1) * 6) / 8 - 31, 0)
                     let offset = (8 - ((historyIndex - 1) * 6) % 8) % 8
                     let blockCount = min(historyIndex - 1, offset == 0 ? 24 : 25)
                     let (start, historyData) = try await readBlocks(from: 22 + startIndex + offset, count: blockCount)

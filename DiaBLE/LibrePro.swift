@@ -55,10 +55,10 @@ class LibrePro: Sensor {
 
             // var blockCount = min(((historyIndex - 1) * 6) / 8, offset == 0 ? 24 : 25) // TEST
             // print("DEBUG: original historyIndex: \(historyIndex), startIndex: \(startIndex), offset: \(offset), blockCount: \(blockCount), start: \(22 + startIndex ), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
-            // let start = 22 + min(startIndex, data.count / 8 - 22)     // TEST
-            // let historyData = Data(data[176...].prefix(46 * 8))       // TEST
-            // blockCount = min(blockCount, (data.count - 176) / 8 - 8)  // TEST
-            // print("DEBUG: TEST data: \(data), historyIndex: \(historyIndex), startIndex: \(startIndex), offset: \(offset), blockCount: \(blockCount), start: \(start), historyData: \(historyData), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
+            // let start = 22 + min(startIndex, fram.count / 8 - 22)     // TEST
+            // let historyData = Data(fram[176...].prefix(46 * 8))       // TEST
+            // blockCount = min(blockCount, (fram.count - 176) / 8 - 8)  // TEST
+            // print("DEBUG: TEST fram: \(fram), historyIndex: \(historyIndex), startIndex: \(startIndex), offset: \(offset), blockCount: \(blockCount), start: \(start), historyData: \(historyData), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
 
             let (start, historyData) = try await nfc.readBlocks(from: 22 + startIndex, count: blockCount)
             log(historyData.hexDump(header: "NFC: did read \(historyData.count / 8) FRAM blocks:", startingBlock: start))

@@ -63,7 +63,7 @@ class LibrePro: Sensor {
         let trendIndex = Int(fram[76]) + Int(fram[77]) << 8      // body[4...5]
         let historyIndex = Int(fram[78]) + Int(fram[79]) << 8    // body[6...7]
 
-        log("DEBUG: Libre Pro: trend index: \(trendIndex), history index: \(historyIndex), started on: \(startDate.shortDateTime)")
+        log("DEBUG: Libre Pro: trend index: \(trendIndex), history index: \(historyIndex), age: \(age) minutes (\(age.formattedInterval))")
 
 
         // MARK: - continue C&P review from the Sensor base class

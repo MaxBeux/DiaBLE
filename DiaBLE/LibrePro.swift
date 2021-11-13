@@ -192,8 +192,8 @@ class LibrePro: Sensor {
 
 
     override func detailFRAM() {
-        log("\(fram.prefix(46 * 8).hexDump(header: "Sensor FRAM:", startingBlock: 0))")
-        debugLog("\(fram.hexDump(header: "TEST: full sensor FRAM:", startingBlock: 0))")
+        log("\(fram.prefix(46 * 8).hexDump(header: "\(type) \(serial) FRAM:", startingBlock: 0))")
+        debugLog("\(fram.hexDump(header: "TEST: \(type) \(serial) full FRAM:", startingBlock: 0))")
         if crcReport.count > 0 {
             log(crcReport)
             if crcReport.contains("FAILED") {

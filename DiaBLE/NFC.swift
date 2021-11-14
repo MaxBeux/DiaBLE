@@ -456,7 +456,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
                 session.invalidate()
 
-                log(data.hexDump(header: "NFC: did read \(data.count / 8) FRAM blocks:", startingBlock: start))
+                log(data.hexDump(header: "NFC: did read \(data.count / 8) FRAM blocks:", startBlock: start))
 
                 // FIXME: doesn't accept encrypted content
                 if sensor.securityGeneration == 2 {
@@ -601,7 +601,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
             } catch {
 
-                log(buffer.hexDump(header: "\(sensor.securityGeneration > 1 ? "`A1 21`" : "B0/B3") command output (\(buffer.count/8) blocks):", startingBlock: start))
+                log(buffer.hexDump(header: "\(sensor.securityGeneration > 1 ? "`A1 21`" : "B0/B3") command output (\(buffer.count/8) blocks):", startBlock: start))
 
                 if requested == 1 {
                     log("NFC: error while reading block #\(blockToRead.hex): \(error.localizedDescription) (ISO 15693 error 0x\(error.iso15693Code.hex): \(error.iso15693Description))")

@@ -373,7 +373,7 @@ class Sensor: ObservableObject, Logging {
 
     func detailFRAM() {
         if encryptedFram.count > 0 && fram.count >= 344 {
-            log("\(fram.hexDump(header: "Sensor decrypted FRAM:", startingBlock: 0))")
+            log("\(fram.hexDump(header: "Sensor decrypted FRAM:", startBlock: 0))")
         }
         if crcReport.count > 0 {
             log(crcReport)

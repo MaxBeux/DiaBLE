@@ -46,10 +46,10 @@ extension NFC {
 
             do {
                 let (start, data) = try await read(fromBlock: 0, count: 43 + (sensor.type == .libre1 ? 201 : 0))
-                log(data.hexDump(header: "ISO 15693 FRAM blocks:", startingBlock: start))
+                log(data.hexDump(header: "ISO 15693 FRAM blocks:", startBlock: start))
                 sensor.fram = Data(data)
                 if sensor.encryptedFram.count > 0 && sensor.fram.count >= 344 {
-                    log("\(sensor.fram.hexDump(header: "Decrypted FRAM:", startingBlock: 0))")
+                    log("\(sensor.fram.hexDump(header: "Decrypted FRAM:", startBlock: 0))")
                 }
             } catch {
             }
@@ -70,7 +70,7 @@ extension NFC {
 
                 let blocks = data.count / 8
 
-                log(data.hexDump(header: "\'\(command)' command output (\(blocks) blocks):", startingBlock: start))
+                log(data.hexDump(header: "\'\(command)' command output (\(blocks) blocks):", startBlock: start))
 
                 // await main actor
                 if await main.settings.debugLevel > 0 {
@@ -131,7 +131,7 @@ extension NFC {
                     try await writeRaw(commandsFramAddress, originalCRC.data)
 
                     let (start, data) = try await read(fromBlock: 0, count: 43)
-                    log(data.hexDump(header: "NFC: did reset FRAM:", startingBlock: start))
+                    log(data.hexDump(header: "NFC: did reset FRAM:", startBlock: start))
                     sensor.fram = Data(data)
                 } catch {
 
@@ -217,7 +217,7 @@ extension NFC {
                 try await writeRaw(footerAddress, patchedCRC.data)
 
                 let (_, data) = try await read(fromBlock: 0, count: 43)
-                log(Data(data.suffix(3 * 8)).hexDump(header: "NFC: did overwite FRAM footer:", startingBlock: 40))
+                log(Data(data.suffix(3 * 8)).hexDump(header: "NFC: did overwite FRAM footer:", startBlock: 40))
                 sensor.fram = Data(data)
             } catch {
 

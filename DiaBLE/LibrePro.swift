@@ -40,6 +40,7 @@ import Foundation
 
 class LibrePro: Sensor {
 
+
 #if !os(watchOS)
     func scanHistory(nfc: NFC) async throws {
         let historyIndex = Int(fram[78]) + Int(fram[79]) << 8
@@ -47,12 +48,12 @@ class LibrePro: Sensor {
         let offset = (8 - ((historyIndex - 1) * 6) % 8) % 8
         let blockCount = min(((historyIndex - 1) * 6) / 8, offset == 0 ? 24 : 25)
 
-        // var blockCount = min(((historyIndex - 1) * 6) / 8, offset == 0 ? 24 : 25) // TEST
-        // print("DEBUG: original historyIndex: \(historyIndex), startBlock: \(startBlock), offset: \(offset), blockCount: \(blockCount), start: \(22 + startBlock ), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
-        // let start = 22 + min(startBlock, fram.count / 8 - 22)     // TEST
-        // let historyData = Data(fram[176...].prefix(46 * 8))       // TEST
-        // blockCount = min(blockCount, (fram.count - 176) / 8 - 8)  // TEST
-        // print("DEBUG: TEST fram: \(fram), historyIndex: \(historyIndex), startBlock: \(startBlock), offset: \(offset), blockCount: \(blockCount), start: \(start), historyData: \(historyData), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
+//        var blockCount = min(((historyIndex - 1) * 6) / 8, offset == 0 ? 24 : 25) // TEST
+//        print("DEBUG: original historyIndex: \(historyIndex), startBlock: \(startBlock), offset: \(offset), blockCount: \(blockCount), start: \(22 + startBlock ), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
+//        let start = 22 + min(startBlock, fram.count / 8 - 22)     // TEST
+//        let historyData = Data(fram[176...].prefix(46 * 8))       // TEST
+//        blockCount = min(blockCount, (fram.count - 176) / 8 - 8)  // TEST
+//        print("DEBUG: TEST fram: \(fram), historyIndex: \(historyIndex), startBlock: \(startBlock), offset: \(offset), blockCount: \(blockCount), start: \(start), historyData: \(historyData), offset...(offset + blockCount * 8): \(offset)...\(offset + blockCount * 8)")
 
         let (start, historyData) = try await nfc.readBlocks(from: 22 + startBlock, count: blockCount)
         log(historyData.hexDump(header: "NFC: did read \(historyData.count / 8) FRAM blocks:", startBlock: start))
@@ -319,7 +320,7 @@ class LibrePro: Sensor {
             main.history.rawValues = sensor.history
         }
 
-        // return sensor
+        // return sensor  // TEST
 
         sensor.uid = Data("42D43E0000A407E0".bytes)
         sensor.patchInfo = Data("70001000E633".bytes)

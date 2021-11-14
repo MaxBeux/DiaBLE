@@ -450,7 +450,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
                 // sensor = LibrePro.test(main: main)   // TEST
                 if sensor.type == .libreProH {
-                    try await sensor.execute(nfc: self, taskRequest: .readFRAM)
+                    try await (sensor as! LibrePro).scanHistory(nfc: self)
                 }
 
                 AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)

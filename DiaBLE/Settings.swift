@@ -196,7 +196,7 @@ class HexDataFormatter: Formatter {
         return (obj as! Data).hex
     }
     override func getObjectValue(_ obj: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
-        obj?.pointee = Data(string.bytes) as AnyObject
+        obj?.pointee = string.bytes as AnyObject
         return true
     }
 

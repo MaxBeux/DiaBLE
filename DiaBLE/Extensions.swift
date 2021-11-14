@@ -81,7 +81,7 @@ extension String {
     var sha1: String { self.data(using: .ascii)!.sha1 }
 
     /// Converts also spaced strings and hexDump() output
-    var bytes: [UInt8] {
+    var bytes: Data {
         var bytes = [UInt8]()
         if !self.contains(" ") {
             var offset = self.startIndex
@@ -98,7 +98,7 @@ extension String {
                 }
             }
         }
-        return bytes
+        return Data(bytes)
     }
 
     func matches(_ pattern: String) -> Bool {

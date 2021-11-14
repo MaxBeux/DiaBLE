@@ -169,11 +169,11 @@ extension NFC {
 
                     // duplicated in activation
                     var readCommand = sensor.readBlockCommand
-                    readCommand.parameters = Data("DF 04".bytes)
+                    readCommand.parameters = "DF 04".bytes
                     var output = try await send(readCommand)
                     debugLog("NFC: 'B0 read 0x04DF' command output: \(output.hex)")
                     var writeCommand = sensor.writeBlockCommand
-                    writeCommand.parameters = Data("DF 04 20 00 DF 88 00 00 00 00".bytes)
+                    writeCommand.parameters = "DF 04 20 00 DF 88 00 00 00 00".bytes
                     output = try await send(writeCommand)
                     debugLog("NFC: 'B1 write' command output: \(output.hex)")
                     output = try await send(readCommand)
@@ -266,12 +266,12 @@ extension NFC {
 
                 if sensor.type == .libreProH {
                     var readCommand = sensor.readBlockCommand
-                    readCommand.parameters = Data("DF 04".bytes)
+                    readCommand.parameters = "DF 04".bytes
                     var output = try await send(readCommand)
                     debugLog("NFC: 'B0 read 0x04DF' command output: \(output.hex)")
                     try await send(sensor.unlockCommand)
                     var writeCommand = sensor.writeBlockCommand
-                    writeCommand.parameters = Data("DF 04 20 00 DF 88 00 00 00 00".bytes)
+                    writeCommand.parameters = "DF 04 20 00 DF 88 00 00 00 00".bytes
                     output = try await send(writeCommand)
                     debugLog("NFC: 'B1 write' command output: \(output.hex)")
                     try await send(sensor.lockCommand)

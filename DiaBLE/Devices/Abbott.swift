@@ -253,12 +253,12 @@ class Abbott: Transmitter {
                     log("Libre 3: received first data (\(buffer.count) bytes):\n\(buffer.hexDump())")
                     buffer = Data()
                     log("Libre 3: test sending 0x22CE packets of 20 + 20 + 6 bytes prefixed by 00 00, 12 00, 24 00")
-                    write(Data("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00".bytes), for: uuid, .withResponse)
-                    write(Data("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00".bytes), for: uuid, .withResponse)
-                    write(Data("24 00 00 00 00 00".bytes), for: uuid, .withResponse)
+                    write("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00".bytes, for: uuid, .withResponse)
+                    write("12 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00".bytes, for: uuid, .withResponse)
+                    write("24 00 00 00 00 00".bytes, for: uuid, .withResponse)
 
                     // TODO:
-                    // writing 002400000000 causes the error `The value's length is invalid`...
+                    // writing 00 24 00 00 00 00 causes the error `The value's length is invalid`...
 
                     // FIXME: writing 08 on 0x2198 makes the Libre 3 disconnect
                     // log("Libre 3: test writing the second command 0x08 on 0x2198")

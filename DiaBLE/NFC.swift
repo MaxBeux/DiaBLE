@@ -424,7 +424,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
 
                         let oopResponse = try await main.post(OOPServer.gen2.nfcDataEndpoint!, ["patchUid": sensor.uid.hex, "authData": securityChallenge.hex]) as! OOPGen2Response
                         authContext = oopResponse.p1
-                        let authenticatedCommand = Data(oopResponse.data.bytes)
+                        let authenticatedCommand = oopResponse.data.bytes
                         log("OOP: context: \(authContext), authenticated `A1 1F get session info` command: \(authenticatedCommand.hex)")
                         var getSessionInfoCommand = sensor.nfcCommand(.getSessionInfo)
                         getSessionInfoCommand.parameters = authenticatedCommand.suffix(authenticatedCommand.count - 3)

@@ -187,6 +187,7 @@ class Sensor: ObservableObject, Logging {
     var family: SensorFamily = .libre
     var region: Int = 0
     var serial: String = ""
+    var readerSerial: Data = Data()
 
     var transmitter: Transmitter?
     var main: MainDelegate!

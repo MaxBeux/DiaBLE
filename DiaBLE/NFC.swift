@@ -42,7 +42,7 @@ extension Sensor {
         case .libre1:
             return NFCCommand(code: 0xA0, parameters: backdoor, description: "activate")
         case .libreProH:
-            return NFCCommand(code: 0xA0, parameters: backdoor + "4A454D573136382D5430323638365F23".bytes, description: "activate")
+            return NFCCommand(code: 0xA0, parameters: backdoor + readerSerial, description: "activate")
         case .libre2:
             return nfcCommand(.activate)
         default:

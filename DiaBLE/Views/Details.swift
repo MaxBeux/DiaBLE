@@ -129,6 +129,8 @@ struct Details: View {
 
                         Row("Serial", app.sensor.serial)
 
+                        Row("Reader serial", app.sensor.readerSerial[...13].string)
+
                         Row("Region", SensorRegion(rawValue: app.sensor.region)?.description ?? "unknown")
 
                         if app.sensor.maxLife > 0 {

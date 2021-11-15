@@ -17,7 +17,7 @@ import Foundation
 // header[4]: sensor state
 // header[6]: failure error code when state = 06
 // header[7...8]: sensor age when failure occurred [0 = unknown]
-// header[24...37]: reader serial number
+// header[24...39]: 14-char reader serial number + 2 bytes to append to the activation command
 //
 // footer[6...7]: maximum life
 //
@@ -37,6 +37,8 @@ import Foundation
 // Libre Pro memory dump:
 // config: 0x1A00, 64
 // sram:   0x1C00, 4096
+//
+// 0xD8F8: 14-char reader serial + 2 bytes to append to the activation command
 
 
 class LibrePro: Sensor {
@@ -155,6 +157,7 @@ class LibrePro: Sensor {
             history.append(Glucose(rawValue: rawValue, rawTemperature: rawTemperature, temperatureAdjustment: temperatureAdjustment, id: id, date: date, hasError: hasError, dataQuality: Glucose.DataQuality(rawValue: Int(quality)), dataQualityFlags: qualityFlags))
         }
 
+        readerSerial = Data(fram[24...39])             // header[-16]
 
         // Libre Pro: fram[42...43] (footer[2..3]) corresponds to patchInfo[2...3]
 
@@ -222,8 +225,7 @@ class LibrePro: Sensor {
             log("Sensor age: \(age) minutes (\(age.formattedInterval)), started on: \((lastReadingDate - Double(age) * 60).shortDateTime)")
         }
 
-        let readerSerial = fram[24...38].string
-        log("Reader serial: \(readerSerial)")
+        log("Reader serial: \(readerSerial[...13].string) + 0x\(readerSerial.suffix(2).hex)")
     }
 
 

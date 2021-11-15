@@ -66,6 +66,11 @@ public class MainDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDele
         numberFormatter.minimumFractionDigits = 8
         settings.numberFormatter = numberFormatter
 
+        // features currently in beta testing
+        if settings.debugLevel > 1 {
+            app.sensor = LibrePro.test(main: self)
+        }
+
     }
 
 

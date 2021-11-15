@@ -129,7 +129,7 @@ struct Details: View {
 
                         Row("Serial", app.sensor.serial)
 
-                        Row("Reader serial", app.sensor.readerSerial[...13].string)
+                        Row("Reader serial", app.sensor.readerSerial.count >= 16 ? app.sensor.readerSerial[...13].string : "")
 
                         Row("Region", SensorRegion(rawValue: app.sensor.region)?.description ?? "unknown")
 

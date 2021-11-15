@@ -437,7 +437,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                     }
                 }
 
-                let (start, data) = try await sensor.securityGeneration < 2 ?
+                var (start, data) = try await sensor.securityGeneration < 2 ?
                 read(fromBlock: 0, count: blocks) : readBlocks(from: 0, count: blocks)
 
                 let lastReadingDate = Date()
@@ -448,7 +448,7 @@ class NFC: NSObject, NFCTagReaderSessionDelegate, Logging {
                 }
                 sensor.lastReadingDate = lastReadingDate
 
-                // sensor = LibrePro.test(main: main); data = sensor.fram   // TEST
+                if await main.settings.debugLevel > 1 { sensor = LibrePro.test(main: main); data = sensor.fram }   // TEST
                 if sensor.type == .libreProH {
                     try await (sensor as! LibrePro).scanHistory(nfc: self)
                 }

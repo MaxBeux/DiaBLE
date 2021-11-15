@@ -17,6 +17,7 @@ import Foundation
 // header[4]: sensor state
 // header[6]: failure error code when state = 06
 // header[7...8]: sensor age when failure occurred [0 = unknown]
+// header[24...37]: reader serial number
 //
 // footer[6...7]: maximum life
 //
@@ -220,6 +221,9 @@ class LibrePro: Sensor {
         if age > 0 {
             log("Sensor age: \(age) minutes (\(age.formattedInterval)), started on: \((lastReadingDate - Double(age) * 60).shortDateTime)")
         }
+
+        let readerSerial = fram[24...38].string
+        log("Reader serial: \(readerSerial)")
     }
 
 

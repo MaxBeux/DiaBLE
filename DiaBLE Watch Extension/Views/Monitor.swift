@@ -116,8 +116,16 @@ struct Monitor: View {
                     if app.device != nil {
                         VStack(spacing: 0) {
                             if app.device.battery > -1 {
-                                Text("Battery: ").foregroundColor(Color(.lightGray)) +
-                                Text("\(app.device.battery)%").foregroundColor(app.device.battery > 10 ? .green : .red)
+                                let battery = app.device.battery
+                                HStack(spacing: 4) {
+                                    let ext = battery > 95 ? 100 :
+                                    battery > 65 ? 75 :
+                                    battery > 35 ? 50 :
+                                    battery > 10 ? 25 : 0
+                                    Image(systemName: "battery.\(ext)")
+                                    Text("\(app.device.battery)%")
+                                }
+                                .foregroundColor(app.device.battery > 10 ? .green : .red)
                             }
                             if app.device.rssi != 0 {
                                 Text("RSSI: ").foregroundColor(Color(.lightGray)) +
